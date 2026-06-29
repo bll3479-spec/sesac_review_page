@@ -2687,6 +2687,673 @@ print(onehot_result)`
       options: ["라벨 인코딩", "원-핫 인코딩", "바이너리 인코딩", "프리퀀시 인코딩"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w3-1-1",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "1차시-1. 차원축소",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%201%EC%B0%A8%EC%8B%9C%20-1.%20%EC%B0%A8%EC%9B%90%EC%B6%95%EC%86%8C.ipynb",
+    title: "43. PCA를 이용한 차원축소",
+    concept: `
+      <p>변수(열)가 너무 많으면 모델이 느려지고 시각화도 어렵습니다. <b>PCA(주성분분석)</b>는 여러 변수의 정보를 최대한 보존하면서
+      더 적은 수의 새로운 축(주성분)으로 압축하는 <b>차원축소</b> 기법입니다. <code>PCA(n_components=5).fit_transform(X)</code>처럼
+      목표 차원 수를 정해주면, 원본 데이터의 분산(정보량)을 가장 많이 설명하는 순서로 새로운 축을 만들어줍니다.
+      차원을 줄인 데이터로 군집화 같은 후속 분석을 했을 때 원본과 성능(예: 실루엣 점수)을 비교해보면 정보 손실이 얼마나 있었는지 가늠할 수 있습니다.</p>`,
+    example: `import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.datasets import load_wine
+
+X = load_wine().data  # 13개 특성을 가진 데이터
+
+# 원본 13차원으로 군집화
+km_full = KMeans(n_clusters=3, random_state=42).fit(X)
+score_full = silhouette_score(X, km_full.labels_)
+
+# PCA로 5차원으로 축소 후 군집화
+pca = PCA(n_components=5)
+X_reduced = pca.fit_transform(X)
+km_reduced = KMeans(n_clusters=3, random_state=42).fit(X_reduced)
+score_reduced = silhouette_score(X_reduced, km_reduced.labels_)
+
+print(f"원본 13차원 실루엣 점수: {score_full:.3f}")
+print(f"PCA 5차원 실루엣 점수: {score_reduced:.3f}")`,
+    practice: {
+      starter: `import pandas as pd
+from sklearn.decomposition import ___ (1)
+from sklearn.datasets import load_wine
+
+X = load_wine().data
+
+# PCA 객체 생성: 3개 주성분으로 축소
+pca = ___(n_components=___) (2)
+
+# fit_transform으로 축소된 데이터 생성
+X_reduced = pca.___(X) (3)
+
+print(X_reduced.shape)`,
+      hint: `(1) sklearn.decomposition에서 PCA를 불러옵니다. (2) PCA(n_components=숫자) 형태로 목표 차원 수를 지정합니다. (3) fit과 transform을 한번에 수행하는 메서드 이름을 떠올려보세요.`,
+      answer: `import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.datasets import load_wine
+
+X = load_wine().data
+
+pca = PCA(n_components=3)
+
+X_reduced = pca.fit_transform(X)
+
+print(X_reduced.shape)`
+    },
+    quiz: {
+      type: "mc",
+      question: `PCA로 차원을 축소했을 때 일반적으로 발생할 수 있는 현상은?`,
+      options: ["일부 정보(분산) 손실이 발생할 수 있다", "데이터의 행 개수가 줄어든다", "범주형 변수가 자동으로 인코딩된다", "결측치가 자동으로 채워진다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-1-2",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "1차시-1. 차원축소",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%201%EC%B0%A8%EC%8B%9C%20-1.%20%EC%B0%A8%EC%9B%90%EC%B6%95%EC%86%8C.ipynb",
+    title: "44. t-SNE를 이용한 차원축소와 시각화",
+    concept: `
+      <p><b>t-SNE</b>는 PCA처럼 차원을 줄이는 기법이지만, 선형 변환인 PCA와 달리 비선형 관계까지 고려해서
+      <b>비슷한 데이터끼리는 가깝게, 다른 데이터는 멀게</b> 배치하는 데 특화되어 있습니다.
+      <code>TSNE(n_components=3).fit_transform(X)</code>처럼 사용하며, 주로 군집 구조를 눈으로 확인하기 위한
+      <b>시각화 목적</b>으로 2~3차원으로 줄일 때 많이 씁니다. 다만 계산 비용이 크고, 축소된 축 자체에 별다른 의미를 부여하기 어렵다는 한계가 있습니다.</p>`,
+    example: `from sklearn.manifold import TSNE
+from sklearn.datasets import load_wine
+import matplotlib.pyplot as plt
+
+X = load_wine().data
+y = load_wine().target
+
+tsne = TSNE(n_components=2, random_state=42)
+X_tsne = tsne.fit_transform(X)
+
+plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y, cmap='viridis')
+plt.title('t-SNE로 2차원으로 축소한 와인 데이터')
+plt.show()`,
+    practice: {
+      starter: `from sklearn.manifold import ___ (1)
+from sklearn.datasets import load_wine
+
+X = load_wine().data
+
+# t-SNE로 3차원으로 축소
+tsne = ___(n_components=___, random_state=42) (2)
+X_tsne = tsne.___(X) (3)
+
+print(X_tsne.shape)`,
+      hint: `(1) sklearn.manifold에 있는 t-SNE 클래스 이름입니다. (2) n_components로 목표 차원 수(3)를 지정합니다. (3) PCA와 동일하게 fit과 transform을 함께 수행하는 메서드를 사용합니다.`,
+      answer: `from sklearn.manifold import TSNE
+from sklearn.datasets import load_wine
+
+X = load_wine().data
+
+tsne = TSNE(n_components=3, random_state=42)
+X_tsne = tsne.fit_transform(X)
+
+print(X_tsne.shape)`
+    },
+    quiz: {
+      type: "mc",
+      question: `PCA와 비교했을 때 t-SNE의 특징으로 알맞은 것은?`,
+      options: ["비선형 구조를 반영해 비슷한 데이터를 가깝게 배치하며 주로 시각화 목적으로 쓰인다", "항상 PCA보다 계산 속도가 빠르다", "결측치를 자동으로 보간한다", "범주형 변수에만 적용할 수 있다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-2-1",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "2차시-2. 이커머스 고객 예측 실전",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20-2.%20%EC%9D%B4%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B3%A0%EA%B0%9D%20%EC%98%88%EC%B8%A1%20%EC%8B%A4%EC%A0%84.ipynb",
+    title: "45. pd.merge와 명명 집계(named aggregation)",
+    concept: `
+      <p>실전 데이터는 보통 여러 테이블로 나뉘어 있습니다(예: 주문 테이블, 고객 테이블). <code>pd.merge(df1, df2, on='키컬럼', how='left')</code>는
+      공통 키 컬럼을 기준으로 두 데이터프레임을 옆으로 합쳐줍니다(<code>pd.concat</code>은 단순히 위/아래나 옆으로 이어붙이는 것이라 키 기준 매칭은 하지 않는다는 점에서 다릅니다).
+      합친 뒤 고객별로 여러 통계를 한 번에 뽑고 싶을 땐 <b>명명 집계</b>를 씁니다:
+      <code>df.groupby('고객ID').agg(총구매액=('금액','sum'), 구매횟수=('주문ID','count'))</code> 처럼 결과 컬럼 이름을 직접 지정하면서 집계할 수 있습니다.</p>`,
+    example: `import pandas as pd
+
+orders = pd.DataFrame({
+    'customer_id': [1, 1, 2, 3, 3, 3],
+    'amount': [10000, 20000, 5000, 7000, 8000, 9000]
+})
+customers = pd.DataFrame({
+    'customer_id': [1, 2, 3],
+    'name': ['A', 'B', 'C']
+})
+
+merged = pd.merge(orders, customers, on='customer_id', how='left')
+
+summary = merged.groupby('customer_id').agg(
+    총구매액=('amount', 'sum'),
+    구매횟수=('amount', 'count'),
+    이름=('name', 'first')
+)
+print(summary)`,
+    practice: {
+      starter: `import pandas as pd
+
+orders = pd.DataFrame({
+    'customer_id': [1, 1, 2, 2, 3],
+    'amount': [3000, 4000, 1000, 2000, 5000]
+})
+customers = pd.DataFrame({
+    'customer_id': [1, 2, 3],
+    'grade': ['VIP', 'normal', 'VIP']
+})
+
+# (1) customer_id 기준으로 두 데이터프레임 병합
+merged = pd.___(orders, customers, on='customer_id', how='left') (1)
+
+# (2) 고객별로 총구매액(sum), 구매횟수(count)를 명명 집계로 계산
+summary = merged.groupby('customer_id').___( (2)
+    총구매액=('amount', 'sum'),
+    구매횟수=('amount', '___') (3)
+)
+print(summary)`,
+      hint: `(1) 두 데이터프레임을 키 컬럼으로 합치는 pandas 함수입니다. (2) groupby 뒤에 명명 집계를 수행하는 메서드 이름입니다. (3) 행의 개수를 세는 집계 함수 이름입니다.`,
+      answer: `import pandas as pd
+
+orders = pd.DataFrame({
+    'customer_id': [1, 1, 2, 2, 3],
+    'amount': [3000, 4000, 1000, 2000, 5000]
+})
+customers = pd.DataFrame({
+    'customer_id': [1, 2, 3],
+    'grade': ['VIP', 'normal', 'VIP']
+})
+
+merged = pd.merge(orders, customers, on='customer_id', how='left')
+
+summary = merged.groupby('customer_id').agg(
+    총구매액=('amount', 'sum'),
+    구매횟수=('amount', 'count')
+)
+print(summary)`
+    },
+    quiz: {
+      type: "mc",
+      question: `pd.merge와 pd.concat의 차이로 알맞은 설명은?`,
+      options: ["merge는 키 컬럼을 기준으로 매칭해서 합치고, concat은 단순히 위/아래(또는 옆)로 이어붙인다", "merge는 항상 행 개수를 줄이고, concat은 항상 늘린다", "concat은 키 컬럼이 반드시 필요하다", "merge는 결측치를 자동으로 제거한다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-2-2",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "2차시-2. 이커머스 고객 예측 실전",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20-2.%20%EC%9D%B4%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B3%A0%EA%B0%9D%20%EC%98%88%EC%B8%A1%20%EC%8B%A4%EC%A0%84.ipynb",
+    title: "46. RFM 분석으로 고객 가치 파생변수 만들기",
+    concept: `
+      <p><b>RFM 분석</b>은 고객을 세분화할 때 자주 쓰는 기법으로, 세 가지 파생변수를 만듭니다:
+      <b>Recency(최근성)</b> = 마지막 구매일로부터 지난 일수(<code>(기준일 - 마지막구매일).dt.days</code>),
+      <b>Frequency(빈도)</b> = 구매 횟수, <b>Monetary(금액)</b> = 총 구매 금액.
+      이 세 지표를 군집화(KMeans 등)의 입력 변수로 사용하면, "최근에 자주 많이 사는 우수고객" 같은
+      의미 있는 고객 그룹을 데이터 기반으로 나눌 수 있습니다.</p>`,
+    example: `import pandas as pd
+
+orders = pd.DataFrame({
+    'customer_id': [1, 1, 2, 3, 3],
+    'order_date': pd.to_datetime(['2024-01-01', '2024-03-15', '2024-02-10', '2024-01-20', '2024-03-01']),
+    'amount': [10000, 20000, 5000, 7000, 8000]
+})
+
+today = pd.to_datetime('2024-03-20')
+
+rfm = orders.groupby('customer_id').agg(
+    last_order=('order_date', 'max'),
+    Frequency=('order_date', 'count'),
+    Monetary=('amount', 'sum')
+)
+rfm['Recency'] = (today - rfm['last_order']).dt.days
+print(rfm[['Recency', 'Frequency', 'Monetary']])`,
+    practice: {
+      starter: `import pandas as pd
+
+orders = pd.DataFrame({
+    'customer_id': [1, 1, 2, 2, 3],
+    'order_date': pd.to_datetime(['2024-01-05', '2024-02-01', '2024-01-10', '2024-03-01', '2024-02-20']),
+    'amount': [5000, 6000, 3000, 4000, 9000]
+})
+today = pd.to_datetime('2024-03-10')
+
+rfm = orders.groupby('customer_id').agg(
+    last_order=('order_date', '___'), (1)
+    Frequency=('order_date', '___'), (2)
+    Monetary=('amount', '___') (3)
+)
+
+# (4) 기준일과 마지막 구매일 차이를 일(day) 단위로 계산
+rfm['Recency'] = (today - rfm['last_order']).___.days (4)
+print(rfm[['Recency', 'Frequency', 'Monetary']])`,
+      hint: `(1) 가장 마지막(최신) 날짜를 구하는 집계 함수입니다. (2) 구매 횟수를 세는 집계 함수입니다. (3) 금액을 합산하는 집계 함수입니다. (4) datetime 차이(Timedelta)에서 일 수만 꺼내는 접근자입니다.`,
+      answer: `import pandas as pd
+
+orders = pd.DataFrame({
+    'customer_id': [1, 1, 2, 2, 3],
+    'order_date': pd.to_datetime(['2024-01-05', '2024-02-01', '2024-01-10', '2024-03-01', '2024-02-20']),
+    'amount': [5000, 6000, 3000, 4000, 9000]
+})
+today = pd.to_datetime('2024-03-10')
+
+rfm = orders.groupby('customer_id').agg(
+    last_order=('order_date', 'max'),
+    Frequency=('order_date', 'count'),
+    Monetary=('amount', 'sum')
+)
+
+rfm['Recency'] = (today - rfm['last_order']).dt.days
+print(rfm[['Recency', 'Frequency', 'Monetary']])`
+    },
+    quiz: {
+      type: "mc",
+      question: `RFM 분석에서 'F(Frequency)'가 의미하는 것은?`,
+      options: ["구매 빈도(횟수)", "마지막 구매로부터 지난 기간", "총 구매 금액", "고객의 거주 지역"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-2-3",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "2차시-2. 이커머스 고객 예측 실전",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20-2.%20%EC%9D%B4%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B3%A0%EA%B0%9D%20%EC%98%88%EC%B8%A1%20%EC%8B%A4%EC%A0%84.ipynb",
+    title: "47. 전처리 함수화로 train/test 동일하게 처리하기",
+    concept: `
+      <p>실전에서는 학습용(train) 데이터에 적용한 전처리(인코딩, 파생변수 생성 등)를 예측 대상인 테스트(test) 데이터에도
+      <b>똑같이</b> 적용해야 모델이 학습한 것과 같은 형식의 입력을 받을 수 있습니다. 매번 코드를 복붙하면 실수가 생기기 쉬우므로,
+      전처리 과정을 <code>def preprocess(df): ... return df</code> 형태의 <b>함수로 모듈화</b>해두고
+      <code>train = preprocess(train)</code>, <code>test = preprocess(test)</code>처럼 동일한 함수를 재사용하는 것이 안전합니다.</p>`,
+    example: `import pandas as pd
+
+def preprocess(df):
+    df = df.copy()
+    df['year'] = pd.to_datetime(df['date']).dt.year
+    df['month'] = pd.to_datetime(df['date']).dt.month
+    df['amount_log'] = df['amount'].apply(lambda x: x ** 0.5)
+    return df
+
+train = pd.DataFrame({'date': ['2024-01-01', '2024-02-01'], 'amount': [100, 400]})
+test = pd.DataFrame({'date': ['2024-03-01'], 'amount': [900]})
+
+train = preprocess(train)
+test = preprocess(test)
+print(train)
+print(test)`,
+    practice: {
+      starter: `import pandas as pd
+
+# (1) 전처리 과정을 함수로 정의: year 컬럼과 amount의 2배인 amount_x2 컬럼 추가
+def ___(df): (1)
+    df = df.copy()
+    df['year'] = pd.to_datetime(df['date']).dt.year
+    df['amount_x2'] = df['amount'] * 2
+    return df
+
+train = pd.DataFrame({'date': ['2024-01-01', '2024-02-01'], 'amount': [10, 20]})
+test = pd.DataFrame({'date': ['2024-03-01'], 'amount': [30]})
+
+# (2) train, test 모두 같은 함수로 전처리
+train = ___(train) (2)
+test = preprocess(test)
+print(train)
+print(test)`,
+      hint: `(1) def 키워드 뒤에 함수 이름을 지어주고 매개변수로 df를 받습니다. (2) 위에서 정의한 함수 이름을 그대로 호출합니다.`,
+      answer: `import pandas as pd
+
+def preprocess(df):
+    df = df.copy()
+    df['year'] = pd.to_datetime(df['date']).dt.year
+    df['amount_x2'] = df['amount'] * 2
+    return df
+
+train = pd.DataFrame({'date': ['2024-01-01', '2024-02-01'], 'amount': [10, 20]})
+test = pd.DataFrame({'date': ['2024-03-01'], 'amount': [30]})
+
+train = preprocess(train)
+test = preprocess(test)
+print(train)
+print(test)`
+    },
+    quiz: {
+      type: "mc",
+      question: `전처리 과정을 함수로 모듈화해서 train과 test에 동일하게 적용하는 이유는?`,
+      options: ["모델이 학습한 것과 같은 형식의 입력을 test에도 동일하게 만들어주기 위해", "test 데이터의 행 개수를 늘리기 위해", "함수로 만들면 결측치가 자동으로 제거되기 때문에", "train 데이터를 암호화하기 위해"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-3-1",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "4차시. 이커머스 고객 2차",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/3%EC%A3%BC%EC%B0%A8%204%EC%B0%A8%EC%8B%9C%20-%20%EC%9D%B4%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B3%A0%EA%B0%9D%202%EC%B0%A8.ipynb",
+    title: "48. ColumnTransformer로 여러 전처리 한번에 적용하기",
+    concept: `
+      <p>실제 데이터는 수치형 컬럼은 <b>스케일링</b>(StandardScaler), 범주형 컬럼은 <b>인코딩</b>(OneHotEncoder/OrdinalEncoder)처럼
+      컬럼마다 다른 전처리가 필요합니다. <code>ColumnTransformer</code>는 "어떤 컬럼들에 어떤 전처리를 적용할지"를 한 번에 정의해서
+      <code>ColumnTransformer([('num', StandardScaler(), ['수치컬럼']), ('cat', OneHotEncoder(), ['범주컬럼'])])</code> 형태로 만들고
+      <code>fit_transform(df)</code> 한 번 호출로 모든 전처리를 동시에 적용할 수 있어, 여러 줄로 나눠 처리하던 코드를 깔끔하게 정리해줍니다.</p>`,
+    example: `import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+df = pd.DataFrame({
+    'age': [25, 32, 47, 51],
+    'income': [3000, 4000, 5000, 6000],
+    'grade': ['A', 'B', 'A', 'C']
+})
+
+ct = ColumnTransformer([
+    ('num', StandardScaler(), ['age', 'income']),
+    ('cat', OneHotEncoder(sparse_output=False), ['grade'])
+])
+
+result = ct.fit_transform(df)
+print(result)`,
+    practice: {
+      starter: `import pandas as pd
+from sklearn.compose import ___ (1)
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+df = pd.DataFrame({
+    'price': [1000, 2000, 1500],
+    'category': ['food', 'toy', 'food']
+})
+
+# (2) 수치형 price는 StandardScaler, 범주형 category는 OneHotEncoder 적용
+ct = ColumnTransformer([
+    ('num', ___(), ['price']), (2)
+    ('cat', ___(sparse_output=False), ['category']) (3)
+])
+
+result = ct.fit_transform(df)
+print(result)`,
+      hint: `(1) sklearn.compose에서 컬럼별 전처리를 묶어주는 클래스 이름입니다. (2) 평균0, 표준편차1로 맞춰주는 스케일러입니다. (3) 범주를 0/1 열로 펼치는 인코더입니다.`,
+      answer: `import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+
+df = pd.DataFrame({
+    'price': [1000, 2000, 1500],
+    'category': ['food', 'toy', 'food']
+})
+
+ct = ColumnTransformer([
+    ('num', StandardScaler(), ['price']),
+    ('cat', OneHotEncoder(sparse_output=False), ['category'])
+])
+
+result = ct.fit_transform(df)
+print(result)`
+    },
+    quiz: {
+      type: "mc",
+      question: `ColumnTransformer를 사용하는 주된 목적은?`,
+      options: ["컬럼별로 다른 전처리(스케일링, 인코딩 등)를 한 번에 정의하고 적용하기 위해", "데이터프레임의 행을 정렬하기 위해", "결측치를 자동으로 삭제하기 위해", "모델의 하이퍼파라미터를 튜닝하기 위해"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-3-2",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "4차시. 이커머스 고객 2차",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/3%EC%A3%BC%EC%B0%A8%204%EC%B0%A8%EC%8B%9C%20-%20%EC%9D%B4%EC%BB%A4%EB%A8%B8%EC%8A%A4%20%EA%B3%A0%EA%B0%9D%202%EC%B0%A8.ipynb",
+    title: "49. AgglomerativeClustering 계층적 군집화",
+    concept: `
+      <p>K-Means는 군집 개수를 미리 정해야 하고 둥근 형태의 군집을 가정합니다. <b>계층적 군집화</b>(<code>AgglomerativeClustering</code>)는
+      처음엔 데이터 하나하나를 별개의 군집으로 보고, 가장 가까운 군집끼리 <b>순차적으로 합쳐가며</b> 트리(덴드로그램) 구조를 만드는 방식입니다.
+      <code>AgglomerativeClustering(n_clusters=3, linkage='ward')</code>에서 <code>linkage</code>는 군집 간 거리를 어떻게 측정할지를 정하며,
+      'ward'는 군집을 합쳤을 때 군집 내 분산 증가가 가장 작은 쌍을 우선 합치는 방식입니다.</p>`,
+    example: `import pandas as pd
+from sklearn.cluster import AgglomerativeClustering
+
+df = pd.DataFrame({
+    'x': [1, 1.5, 5, 5.5, 9, 9.5],
+    'y': [1, 1.2, 5, 5.3, 9, 9.1]
+})
+
+model = AgglomerativeClustering(n_clusters=3, linkage='ward')
+labels = model.fit_predict(df)
+print(labels)`,
+    practice: {
+      starter: `import pandas as pd
+from sklearn.cluster import ___ (1)
+
+df = pd.DataFrame({
+    'x': [1, 1.2, 8, 8.3, 15, 15.5],
+    'y': [1, 0.9, 8, 8.1, 15, 14.8]
+})
+
+# (2) 3개의 군집으로, ward 방식으로 계층적 군집화 객체 생성
+model = ___(n_clusters=___, linkage='___') (2)
+labels = model.fit_predict(df)
+print(labels)`,
+      hint: `(1) sklearn.cluster에 있는 계층적 군집화 클래스 이름입니다. (2) n_clusters에는 원하는 군집 개수, linkage에는 분산 증가가 최소가 되는 쌍을 합치는 방식의 이름을 문자열로 적습니다.`,
+      answer: `import pandas as pd
+from sklearn.cluster import AgglomerativeClustering
+
+df = pd.DataFrame({
+    'x': [1, 1.2, 8, 8.3, 15, 15.5],
+    'y': [1, 0.9, 8, 8.1, 15, 14.8]
+})
+
+model = AgglomerativeClustering(n_clusters=3, linkage='ward')
+labels = model.fit_predict(df)
+print(labels)`
+    },
+    quiz: {
+      type: "mc",
+      question: `AgglomerativeClustering(계층적 군집화)의 기본 원리는?`,
+      options: ["개별 데이터를 가장 가까운 군집끼리 순차적으로 합쳐가는 방식이다", "처음에 군집 개수를 정하지 않고 중심점을 무작위로 옮긴다", "밀도가 높은 영역만 군집으로 인식한다", "PCA로 차원을 줄인 뒤에만 사용할 수 있다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-4-1",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "2차시-2. 실전데이터 연습(제주 특산물 가격 예측)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%202.%20%EC%8B%A4%EC%A0%84%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%97%B0%EC%8A%B5%20%28%EC%A0%9C%EC%A3%BC%20%ED%8A%B9%EC%82%B0%EB%AC%BC%20%EA%B0%80%EA%B2%A9%20%EC%98%88%EC%B8%A1%29.ipynb%EC%9D%98%20%EC%82%AC%EB%B3%B8",
+    title: "50. groupby + transform을 이용한 그룹별 이상치 탐지",
+    concept: `
+      <p>예전에 배운 IQR 이상치 탐지는 데이터 전체를 하나로 보고 계산했지만, 품목(item)마다 가격대가 크게 다른 경우엔
+      <b>품목별로 따로</b> IQR을 계산해야 정확합니다. <code>df.groupby('item')['price'].transform('quantile', 0.25)</code>처럼
+      <code>transform</code>을 쓰면 그룹별로 계산한 분위수 값을 <b>원본과 같은 행 개수로 다시 펼쳐서</b> 돌려주기 때문에,
+      그 결과를 바로 원본 데이터프레임과 비교해 그룹별 이상치 여부를 행 단위로 판별할 수 있습니다.</p>`,
+    example: `import pandas as pd
+
+df = pd.DataFrame({
+    'item': ['사과', '사과', '사과', '배', '배', '배'],
+    'price': [1000, 1100, 5000, 3000, 3100, 3200]
+})
+
+q1 = df.groupby('item')['price'].transform('quantile', 0.25)
+q3 = df.groupby('item')['price'].transform('quantile', 0.75)
+iqr = q3 - q1
+
+lower = q1 - 1.5 * iqr
+upper = q3 + 1.5 * iqr
+
+is_outlier = (df['price'] < lower) | (df['price'] > upper)
+print(df[is_outlier])`,
+    practice: {
+      starter: `import pandas as pd
+
+df = pd.DataFrame({
+    'item': ['감귤', '감귤', '감귤', '한라봉', '한라봉', '한라봉'],
+    'price': [2000, 2100, 9000, 5000, 5200, 5100]
+})
+
+# (1) 품목별로 1분위수, 3분위수를 transform으로 계산
+q1 = df.groupby('item')['price'].___('quantile', 0.25) (1)
+q3 = df.groupby('item')['price'].transform('quantile', 0.75)
+iqr = q3 - q1
+
+lower = q1 - 1.5 * iqr
+upper = q3 + 1.5 * iqr
+
+# (2) 정상 범위를 벗어난 행만 골라내는 불리언 조건
+is_outlier = (df['price'] < lower) ___ (df['price'] > upper) (2)
+print(df[is_outlier])`,
+      hint: `(1) groupby 결과에 그룹별 계산값을 원본 행 개수로 그대로 펼쳐 돌려주는 메서드입니다. (2) "또는" 조건을 의미하는 논리 연산자(비트 OR)입니다.`,
+      answer: `import pandas as pd
+
+df = pd.DataFrame({
+    'item': ['감귤', '감귤', '감귤', '한라봉', '한라봉', '한라봉'],
+    'price': [2000, 2100, 9000, 5000, 5200, 5100]
+})
+
+q1 = df.groupby('item')['price'].transform('quantile', 0.25)
+q3 = df.groupby('item')['price'].transform('quantile', 0.75)
+iqr = q3 - q1
+
+lower = q1 - 1.5 * iqr
+upper = q3 + 1.5 * iqr
+
+is_outlier = (df['price'] < lower) | (df['price'] > upper)
+print(df[is_outlier])`
+    },
+    quiz: {
+      type: "mc",
+      question: `groupby('item')['price'].transform('quantile', 0.25)의 결과 길이는?`,
+      options: ["원본 데이터프레임의 행 개수와 같다", "품목(item)의 고유값 개수와 같다", "항상 1개의 값만 반환한다", "0.25 비율만큼 행이 줄어든다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-4-2",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "2차시-2. 실전데이터 연습(제주 특산물 가격 예측)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%202.%20%EC%8B%A4%EC%A0%84%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%97%B0%EC%8A%B5%20%28%EC%A0%9C%EC%A3%BC%20%ED%8A%B9%EC%82%B0%EB%AC%BC%20%EA%B0%80%EA%B2%A9%20%EC%98%88%EC%B8%A1%29.ipynb%EC%9D%98%20%EC%82%AC%EB%B3%B8",
+    title: "51. LightGBM, XGBoost, CatBoost 부스팅 모델 비교",
+    concept: `
+      <p>AdaBoost 외에도 캐글 등 실전 대회에서 널리 쓰이는 부스팅 계열 모델이 있습니다.
+      <b>LightGBM</b>(<code>LGBMRegressor</code>)은 가볍고 학습이 빨라 대용량 데이터에 유리하고,
+      <b>XGBoost</b>(<code>XGBRegressor</code>)는 다양한 상황에서 안정적인 성능을 보이며,
+      <b>CatBoost</b>(<code>CatBoostRegressor</code>)는 범주형(category) 변수를 별도 인코딩 없이도 잘 처리하는 것이 특징입니다.
+      회귀에서는 <code>root_mean_squared_error(y_valid, pred)</code>로 여러 모델의 오차를 비교해 가장 적합한 모델을 고를 수 있습니다.</p>`,
+    example: `from lightgbm import LGBMRegressor
+from xgboost import XGBRegressor
+from catboost import CatBoostRegressor
+from sklearn.metrics import root_mean_squared_error
+
+# x_train, y_train, x_valid, y_valid가 준비되어 있다고 가정
+lgbm = LGBMRegressor()
+lgbm.fit(x_train, y_train)
+print("LightGBM:", root_mean_squared_error(y_valid, lgbm.predict(x_valid)))
+
+xg = XGBRegressor()
+xg.fit(x_train, y_train)
+print("XGBoost:", root_mean_squared_error(y_valid, xg.predict(x_valid)))
+
+cat = CatBoostRegressor(verbose=0)
+cat.fit(x_train, y_train)
+print("CatBoost:", root_mean_squared_error(y_valid, cat.predict(x_valid)))`,
+    practice: {
+      starter: `from lightgbm import ___ (1)
+from sklearn.metrics import root_mean_squared_error
+
+# x_train, y_train, x_valid, y_valid가 준비되어 있다고 가정
+
+# (2) LightGBM 회귀 모델 생성 및 학습
+lgbm = LGBMRegressor()
+lgbm.___(x_train, y_train) (2)
+
+# (3) 검증 데이터로 예측 후 오차 계산
+pred = lgbm.predict(x_valid)
+score = root_mean_squared_error(___, ___) (3)
+print(score)`,
+      hint: `(1) lightgbm 패키지에서 회귀용 클래스 이름입니다. (2) 모델을 데이터에 맞춰 학습시키는 메서드입니다. (3) 실제값과 예측값 순서로 root_mean_squared_error에 전달합니다.`,
+      answer: `from lightgbm import LGBMRegressor
+from sklearn.metrics import root_mean_squared_error
+
+# x_train, y_train, x_valid, y_valid가 준비되어 있다고 가정
+
+lgbm = LGBMRegressor()
+lgbm.fit(x_train, y_train)
+
+pred = lgbm.predict(x_valid)
+score = root_mean_squared_error(y_valid, pred)
+print(score)`
+    },
+    quiz: {
+      type: "mc",
+      question: `CatBoost의 가장 큰 특징으로 알려진 것은?`,
+      options: ["범주형(category) 변수를 별도 인코딩 없이도 잘 처리한다", "수치형 변수만 입력으로 받을 수 있다", "항상 K-Means보다 빠르다", "비지도 학습 전용 모델이다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w3-4-3",
+    week: "3주차 - 데이터 분석 실전 연습",
+    notebookTitle: "2차시-2. 실전데이터 연습(제주 특산물 가격 예측)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/3%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EC%8B%A4%EC%A0%84%20%EC%97%B0%EC%8A%B5/%EC%83%88%EC%8B%B9%203%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%202.%20%EC%8B%A4%EC%A0%84%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%97%B0%EC%8A%B5%20%28%EC%A0%9C%EC%A3%BC%20%ED%8A%B9%EC%82%B0%EB%AC%BC%20%EA%B0%80%EA%B2%A9%20%EC%98%88%EC%B8%A1%29.ipynb%EC%9D%98%20%EC%82%AC%EB%B3%B8",
+    title: "52. GridSearchCV와 RandomizedSearchCV 하이퍼파라미터 튜닝",
+    concept: `
+      <p>모델 성능을 더 끌어올리려면 <b>하이퍼파라미터</b>(예: max_depth, gamma 등)를 조정해야 합니다.
+      <b>GridSearchCV</b>는 지정한 값들의 <b>모든 조합</b>을 교차검증으로 시도해 최적값을 찾습니다
+      (<code>GridSearchCV(estimator=모델, param_grid={...}, cv=5, scoring='neg_root_mean_squared_error')</code>) —
+      이미 어느 정도 범위를 좁혀놓고 촘촘히 탐색할 때 유리합니다. <b>RandomizedSearchCV</b>는 후보 값 중 <b>무작위로 일부만</b> 골라 시도하므로
+      탐색 범위가 넓거나 조합 수가 너무 많을 때 더 빠르게 대략적인 최적값을 찾는 데 유리합니다.
+      탐색이 끝나면 <code>.best_params_</code>로 가장 좋았던 조합을 확인할 수 있습니다.</p>`,
+    example: `from sklearn.model_selection import GridSearchCV
+from xgboost import XGBRegressor
+
+# x_train, y_train이 준비되어 있다고 가정
+grid_search = GridSearchCV(
+    estimator=XGBRegressor(),
+    param_grid={'gamma': [0, 1, 10], 'max_depth': [10, 20, 30]},
+    cv=5,
+    scoring='neg_root_mean_squared_error'
+)
+
+grid_search.fit(x_train, y_train)
+print(grid_search.best_params_)`,
+    practice: {
+      starter: `from sklearn.model_selection import ___ (1)
+from xgboost import XGBRegressor
+
+# x_train, y_train이 준비되어 있다고 가정
+
+# (2) gamma는 [0, 10, 100], max_depth는 [5, 10]의 모든 조합을 5-fold 교차검증으로 탐색
+search = GridSearchCV(
+    estimator=XGBRegressor(),
+    param_grid={'gamma': [0, 10, 100], 'max_depth': [5, 10]},
+    ___=5, (2)
+    scoring='neg_root_mean_squared_error'
+)
+
+search.fit(x_train, y_train)
+
+# (3) 가장 좋은 파라미터 조합 확인
+print(search.___) (3)`,
+      hint: `(1) sklearn.model_selection에 있는, 모든 조합을 탐색하는 클래스 이름입니다. (2) 교차검증 폴드 개수를 지정하는 매개변수입니다. (3) 탐색이 끝난 뒤 최적 파라미터 조합을 담고 있는 속성 이름입니다.`,
+      answer: `from sklearn.model_selection import GridSearchCV
+from xgboost import XGBRegressor
+
+# x_train, y_train이 준비되어 있다고 가정
+
+search = GridSearchCV(
+    estimator=XGBRegressor(),
+    param_grid={'gamma': [0, 10, 100], 'max_depth': [5, 10]},
+    cv=5,
+    scoring='neg_root_mean_squared_error'
+)
+
+search.fit(x_train, y_train)
+
+print(search.best_params_)`
+    },
+    quiz: {
+      type: "mc",
+      question: `GridSearchCV와 RandomizedSearchCV의 차이로 알맞은 것은?`,
+      options: ["GridSearchCV는 모든 조합을 탐색하고, RandomizedSearchCV는 일부만 무작위로 탐색한다", "RandomizedSearchCV는 교차검증을 사용할 수 없다", "GridSearchCV는 분류 모델에만 사용 가능하다", "두 방법 모두 항상 같은 결과를 보장한다"],
+      correctIndex: 0
+    }
   }
 ];
 
