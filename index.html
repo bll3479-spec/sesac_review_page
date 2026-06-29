@@ -787,6 +787,261 @@ d2.info()`
       options: ["self.__init__()", "super().__init__()", "parent()", "init()"],
       correctIndex: 1
     }
+  },
+  {
+    id: "w1-3-1",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "3차시. 판다스 기초",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C.ipynb",
+    title: "11. 판다스 데이터프레임 기초",
+    concept: `
+      <p><b>pandas</b>는 행과 열로 이루어진 표 형태 데이터를 다루는 라이브러리입니다. 1줄짜리는 <code>Series</code>,
+      행·열을 모두 가진 표는 <code>DataFrame</code>입니다. 딕셔너리로 만들면 키가 <b>컬럼(열 이름)</b>이 되고,
+      <code>index</code>로 행 이름을 지정할 수 있습니다. <code>head(n)/tail(n)</code>은 위/아래 n개 행을 보여줍니다(기본값 5).</p>`,
+    example: `import pandas as pd
+data = {"a": [1,2,3,4], "b": [2,4,6,8], "c": [1,3,5,7]}
+df = pd.DataFrame(data, index=['1st','2nd','3rd','4th'])
+
+print(df.head(2))
+print(df.columns, df.index)`,
+    practice: {
+      starter: `import pandas as pd
+scores = {"국어": [80, 90, 70, 60], "수학": [70, 85, 95, 60]}
+
+# (1) scores로 DataFrame을 만들고, index를 ['철수','영희','민수','지은']으로 지정해 df에 저장하세요
+df = ___
+
+# (2) df의 컬럼 이름과 인덱스를 출력하세요
+print(___, ___)
+
+# (3) 위에서 2개 행만 출력하세요
+print(___)`,
+      hint: `1) pd.DataFrame(딕셔너리, index=[...]) 형태로 생성합니다.
+2) 컬럼/인덱스는 df.columns, df.index로 확인합니다.
+3) head(n)으로 위에서 n개 행을 봅니다.`,
+      answer: `import pandas as pd
+scores = {"국어": [80, 90, 70, 60], "수학": [70, 85, 95, 60]}
+
+df = pd.DataFrame(scores, index=['철수','영희','민수','지은'])
+
+print(df.columns, df.index)
+print(df.head(2))`
+    },
+    quiz: {
+      type: "mc",
+      question: `DataFrame에서 위에서부터 N개 행만 보고 싶을 때 사용하는 메서드는?`,
+      options: ["head()", "tail()", "info()", "describe()"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-3-2",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "3차시. 판다스 기초",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C.ipynb",
+    title: "12. loc / iloc로 데이터 접근하기",
+    concept: `
+      <p><code>loc</code>은 <b>이름(label)</b>으로, <code>iloc</code>은 <b>순서(정수 위치)</b>로 행·열에 접근합니다.
+      <code>df.loc[행, 열]</code> / <code>df.iloc[행번호, 열번호]</code> 형태이며, 슬라이싱 시 <b>loc은 끝 라벨을 포함</b>하지만
+      <b>iloc은 파이썬 규칙대로 끝 번호를 포함하지 않습니다.</b></p>`,
+    example: `import pandas as pd
+df2 = pd.DataFrame([[100,1,10],[350,7,15],[250,5,5],[550,14,0]],
+                    index=['1호점','2호점','3호점','4호점'],
+                    columns=['매출액','점원수','점포비용'])
+
+print(df2.loc['2호점':'3호점', ['매출액','점포비용']])
+print(df2.iloc[1:3, [0,2]])`,
+    practice: {
+      starter: `import pandas as pd
+df2 = pd.DataFrame([[100,1,10],[350,7,15],[250,5,5],[550,14,0]],
+                    index=['1호점','2호점','3호점','4호점'],
+                    columns=['매출액','점원수','점포비용'])
+
+# (1) loc을 사용해 '3호점'의 '점원수'만 출력하세요
+print(___)
+
+# (2) iloc을 사용해 1호점(0번행)의 매출액(0번열)을 출력하세요
+print(___)
+
+# (3) loc을 사용해 '2호점'부터 '3호점'까지, '매출액'과 '점포비용' 열을 출력하세요
+print(___)`,
+      hint: `1) loc은 이름으로 접근합니다: df2.loc['3호점', '점원수']
+2) iloc은 정수 위치입니다: df2.iloc[0, 0]
+3) loc의 슬라이싱은 끝 라벨도 포함됩니다: df2.loc['2호점':'3호점', ['매출액','점포비용']]`,
+      answer: `import pandas as pd
+df2 = pd.DataFrame([[100,1,10],[350,7,15],[250,5,5],[550,14,0]],
+                    index=['1호점','2호점','3호점','4호점'],
+                    columns=['매출액','점원수','점포비용'])
+
+print(df2.loc['3호점', '점원수'])
+print(df2.iloc[0, 0])
+print(df2.loc['2호점':'3호점', ['매출액','점포비용']])`
+    },
+    quiz: {
+      type: "mc",
+      question: `loc과 iloc의 차이로 올바른 것은?`,
+      options: [
+        "loc은 이름 기준, iloc은 순서(정수) 기준",
+        "둘 다 순서 기준이다",
+        "둘 다 이름 기준이다",
+        "loc은 열만, iloc은 행만 접근한다"
+      ],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-3-3",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "3차시. 판다스 기초",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C.ipynb",
+    title: "13. 조건 필터링과 정렬",
+    concept: `
+      <p><code>df[조건]</code> 형태로 조건에 맞는 행만 걸러내는 것을 <b>불리언 인덱싱</b>이라 합니다. 문자열 열에서는
+      <code>.str.contains('문자')</code>로 포함 여부를 조건으로 쓸 수 있습니다. <code>sort_values('열', ascending=True/False)</code>로
+      특정 열 기준 정렬을 할 수 있습니다.</p>`,
+    example: `import pandas as pd
+df = pd.DataFrame({'os':[8,15,3,21], 'channel':[101,205,98,310]})
+
+print(df[df['os'] > 10])
+print(df.sort_values('channel', ascending=False))`,
+    practice: {
+      starter: `import pandas as pd
+ani_df = pd.DataFrame({"Animal":["Dog","Cat","Pig","Panda"], "Name":["Kong","Marry","Sam","PP"]})
+
+# (1) Name에 소문자 'a'가 포함된 행만 필터링해 result1에 저장하세요
+result1 = ___
+
+# (2) Animal 컬럼을 기준으로 알파벳 내림차순으로 정렬해 result2에 저장하세요
+result2 = ___
+
+print(result1)
+print(result2)`,
+      hint: `1) 문자열 포함 조건은 ani_df[ani_df['Name'].str.contains('a')] 형태입니다.
+2) 내림차순 정렬은 ani_df.sort_values('Animal', ascending=False)`,
+      answer: `import pandas as pd
+ani_df = pd.DataFrame({"Animal":["Dog","Cat","Pig","Panda"], "Name":["Kong","Marry","Sam","PP"]})
+
+result1 = ani_df[ani_df['Name'].str.contains('a')]
+result2 = ani_df.sort_values('Animal', ascending=False)
+
+print(result1)
+print(result2)`
+    },
+    quiz: {
+      type: "mc",
+      question: `문자열 열에서 특정 문자가 포함된 행만 찾을 때 사용하는 메서드는?`,
+      options: ["str.contains()", "str.replace()", "sort_values()", "groupby()"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-3-4",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "3차시. 판다스 기초",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C.ipynb",
+    title: "14. apply와 replace로 데이터 가공하기",
+    concept: `
+      <p><code>열.apply(함수)</code>는 열의 각 값에 함수를 하나씩 적용해 새로운 결과를 만듭니다. <code>열.replace({"기존값":"새값", ...})</code>는
+      특정 값들을 딕셔너리 매핑으로 한 번에 치환합니다. 둘 다 결과를 변수(또는 새 열)에 저장해야 반영됩니다.</p>`,
+    example: `import pandas as pd
+def to_upper(word):
+    return word.upper()
+
+names = pd.Series(['kim','lee','park'])
+print(names.apply(to_upper))
+
+gender = pd.Series(['Man','Woman','Man']).replace({'Man':'M', 'Woman':'W'})
+print(gender)`,
+    practice: {
+      starter: `import pandas as pd
+ani_df = pd.DataFrame({"Animal":["Dog","Cat","Pig","Panda"], "Name":["Kong","Marry","Sam","PP"]})
+
+# (1) 문자열을 대문자로 바꾸는 함수 to_upper를 작성하세요
+def to_upper(word):
+    ___
+
+# (2) apply를 사용해 'Name_upper' 열을 추가하세요
+ani_df['Name_upper'] = ___
+
+# (3) Animal 열에서 'Dog'->'개', 'Cat'->'고양이'로 바꿔 result에 저장하세요 (나머지는 그대로)
+result = ___
+
+print(ani_df)
+print(result)`,
+      hint: `1) return word.upper()
+2) ani_df['Name'].apply(to_upper)
+3) ani_df['Animal'].replace({'Dog':'개', 'Cat':'고양이'})`,
+      answer: `import pandas as pd
+ani_df = pd.DataFrame({"Animal":["Dog","Cat","Pig","Panda"], "Name":["Kong","Marry","Sam","PP"]})
+
+def to_upper(word):
+    return word.upper()
+
+ani_df['Name_upper'] = ani_df['Name'].apply(to_upper)
+result = ani_df['Animal'].replace({'Dog':'개', 'Cat':'고양이'})
+
+print(ani_df)
+print(result)`
+    },
+    quiz: {
+      type: "mc",
+      question: `데이터프레임의 한 열에 직접 만든 함수를 각 값마다 적용하고 싶을 때 사용하는 메서드는?`,
+      options: ["apply()", "replace()", "sort_values()", "groupby()"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-3-5",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "3차시-2. 판다스 집계함수 연습",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%20-2%20%ED%8C%90%EB%8B%A4%EC%8A%A4%20%EC%A7%91%EA%B3%84%ED%95%A8%EC%88%98%20%EC%97%B0%EC%8A%B5.ipynb",
+    title: "15. groupby와 집계함수",
+    concept: `
+      <p><code>groupby('기준열')['대상열'].집계함수()</code>는 기준열의 같은 값끼리 그룹을 묶어 대상열에 통계를 계산합니다
+      (예: <code>mean(), sum(), max(), min()</code>). 여러 통계를 한 번에 보고 싶으면 <code>.agg(["min","max"])</code>를 사용합니다.
+      중복을 제거한 개수는 <code>nunique()</code>, 전체 행 개수는 <code>count()</code>입니다.</p>`,
+    example: `import pandas as pd
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+print(df.groupby('continent')['lifeExp'].mean())
+print(df.groupby('continent')['lifeExp'].agg(['min','max']))
+print(df.groupby('continent')['country'].nunique())`,
+    practice: {
+      starter: `import pandas as pd
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+# (1) 연도(year)별 인구(pop)의 최댓값을 구해 result1에 저장하세요
+result1 = ___
+
+# (2) 대륙(continent)별 국가(country) 개수를 중복 없이 구해 result2에 저장하세요
+result2 = ___
+
+# (3) 대륙별 기대수명(lifeExp)의 최솟값과 최댓값을 함께 구해 result3에 저장하세요
+result3 = ___
+
+print(result1)
+print(result2)
+print(result3)`,
+      hint: `1) df.groupby('year')['pop'].max()
+2) 중복 제거 개수는 nunique(): df.groupby('continent')['country'].nunique()
+3) 여러 통계를 한번에 보려면 agg(["min","max"])를 사용합니다.`,
+      answer: `import pandas as pd
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+result1 = df.groupby('year')['pop'].max()
+result2 = df.groupby('continent')['country'].nunique()
+result3 = df.groupby('continent')['lifeExp'].agg(["min", "max"])
+
+print(result1)
+print(result2)
+print(result3)`
+    },
+    quiz: {
+      type: "mc",
+      question: `그룹별로 여러 통계량(예: 최소, 최대)을 한 번에 구하고 싶을 때 사용하는 메서드는?`,
+      options: ["agg()", "apply()", "loc()", "sort_values()"],
+      correctIndex: 0
+    }
   }
 ];
 
