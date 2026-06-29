@@ -1042,6 +1042,329 @@ print(result3)`
       options: ["agg()", "apply()", "loc()", "sort_values()"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w1-4-1",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "4차시-2. 시각화(맷플롯립)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8-%204%EC%B0%A8%EC%8B%9C%20-%202%20%EC%8B%9C%EA%B0%81%ED%99%94%28%EB%A7%B7%ED%94%8C%EB%A1%AF%EB%A6%BD%29.ipynb",
+    title: "16. matplotlib 기본 그래프와 서브플롯",
+    concept: `
+      <p><code>plt.plot(x, y)</code>로 간단한 선 그래프를 그릴 수 있지만, 그래프를 세밀하게 다루려면
+      <code>fig, ax = plt.subplots()</code>로 <b>figure(전체 캔버스)</b>와 <b>axes(개별 그래프 영역)</b>를 분리해서 다룹니다.
+      <code>ax.plot()</code>으로 그래프를 그리고, <code>plt.subplots(행, 열)</code>로 여러 그래프를 한 화면에 격자로 배치할 수 있습니다.
+      각 서브플롯은 <code>ax[0]</code>, <code>ax[1]</code>처럼 인덱싱하여 접근합니다.</p>`,
+    example: `import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 10, 100)
+fig, ax = plt.subplots(1, 2, figsize=(8, 3))
+ax[0].plot(x, np.sin(x))
+ax[0].set_title('sin')
+ax[1].plot(x, np.cos(x), 'r--')
+ax[1].set_title('cos')
+plt.show()`,
+    practice: {
+      starter: `import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 10, 100)
+
+# (1) 1행 2열의 서브플롯을 만들어 fig, ax에 저장하세요
+fig, ax = ___
+
+# (2) 첫 번째 서브플롯(ax[0])에 x, np.sin(x)를 선 그래프로 그리세요
+___
+
+# (3) 두 번째 서브플롯(ax[1])에 x, np.cos(x)를 점선('--')으로 그리세요
+___
+
+plt.show()`,
+      hint: `1) plt.subplots(1, 2)
+2) ax[0].plot(x, np.sin(x))
+3) ax[1].plot(x, np.cos(x), '--')`,
+      answer: `import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 10, 100)
+
+fig, ax = plt.subplots(1, 2)
+
+ax[0].plot(x, np.sin(x))
+
+ax[1].plot(x, np.cos(x), '--')
+
+plt.show()`
+    },
+    quiz: {
+      type: "mc",
+      question: `matplotlib에서 "전체 캔버스"와 "개별 그래프 영역"을 각각 의미하는 두 객체는?`,
+      options: ["fig, ax", "plt, ax", "ax, fig", "canvas, plot"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-4-2",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "4차시-2. 시각화(맷플롯립)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8-%204%EC%B0%A8%EC%8B%9C%20-%202%20%EC%8B%9C%EA%B0%81%ED%99%94%28%EB%A7%B7%ED%94%8C%EB%A1%AF%EB%A6%BD%29.ipynb",
+    title: "17. 산점도와 막대그래프",
+    concept: `
+      <p>두 변수의 관계를 점으로 표현할 때는 <code>ax.scatter(x, y)</code>를 사용합니다. 범주별 값을 비교할 때는
+      <code>ax.bar(x, y)</code>로 막대그래프를 그립니다. 여러 그룹을 같은 x 위치에 쌓아서 보여주는 <b>누적 막대그래프</b>는
+      <code>bottom=</code> 옵션으로 이전 막대 위에 이어 그리고, 그룹별로 나란히 보여주는 <b>그룹 막대그래프</b>는
+      x좌표를 조금씩 이동시켜(<code>x - width/2</code>, <code>x + width/2</code>) 그립니다.</p>`,
+    example: `import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.random.rand(50)
+y = np.random.rand(50)
+fig, ax = plt.subplots()
+ax.scatter(x, y)
+plt.show()
+
+categories = ['A', 'B', 'C']
+values = [10, 20, 15]
+fig, ax = plt.subplots()
+ax.bar(categories, values)
+plt.show()`,
+      practice: {
+      starter: `import matplotlib.pyplot as plt
+
+categories = ['A', 'B', 'C']
+values1 = [10, 20, 15]
+values2 = [5, 8, 12]
+
+# (1) categories, values1로 산점도를 그리세요 (fig, ax 생성 후 scatter)
+fig, ax = plt.subplots()
+___
+
+# (2) categories별 values1과 values2를 같은 막대 위에 쌓아 그리는 누적 막대그래프를 그리세요
+fig2, ax2 = plt.subplots()
+ax2.bar(categories, values1)
+___
+
+plt.show()`,
+      hint: `1) ax.scatter(categories, values1)
+2) 누적 막대는 bottom 옵션을 사용합니다: ax2.bar(categories, values2, bottom=values1)`,
+      answer: `import matplotlib.pyplot as plt
+
+categories = ['A', 'B', 'C']
+values1 = [10, 20, 15]
+values2 = [5, 8, 12]
+
+fig, ax = plt.subplots()
+ax.scatter(categories, values1)
+
+fig2, ax2 = plt.subplots()
+ax2.bar(categories, values1)
+ax2.bar(categories, values2, bottom=values1)
+
+plt.show()`
+    },
+    quiz: {
+      type: "mc",
+      question: `누적 막대그래프를 그릴 때 이전 막대 위에 새 막대를 이어 그리기 위해 사용하는 bar()의 옵션은?`,
+      options: ["bottom=", "stack=", "base=", "offset="],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-4-3",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "4차시-3. 판다스, 결측치 & 이상치",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%204%EC%B0%A8%EC%8B%9C%20-3%20%ED%8C%90%EB%8B%A4%EC%8A%A4%2C%20%EA%B2%B0%EC%B8%A1%EC%B9%98%20%26%EC%9D%B4%EC%83%81%EC%B9%98.ipynb",
+    title: "18. 결측치 탐지와 처리",
+    concept: `
+      <p>비어있는 값(<code>np.nan</code>)이 있는지 확인할 때는 <code>df.isnull()</code> / <code>df.notnull()</code>을 사용합니다.
+      결측치를 <b>제거</b>할 때는 <code>dropna(axis=, how=, thresh=, subset=)</code>로 행/열, 조건, 최소 유효개수, 대상 컬럼을 지정합니다.
+      결측치를 <b>채울</b> 때는 <code>fillna(value=)</code>로 특정 값을, <code>method='ffill'</code>로 앞의 값을, 평균/중앙값으로
+      채우려면 <code>fillna(df['열'].mean())</code>처럼 사용합니다.</p>`,
+    example: `import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({'A': [1, np.nan, 3], 'B': [np.nan, 5, 6]})
+print(df.isnull().sum())
+
+df_dropped = df.dropna(subset=['A'])
+df_filled = df.fillna(df.mean())
+print(df_filled)`,
+    practice: {
+      starter: `import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({'A': [1, np.nan, 3, np.nan], 'B': [np.nan, 5, 6, 7]})
+
+# (1) 각 열의 결측치 개수를 구해 result1에 저장하세요
+result1 = ___
+
+# (2) A열에 결측치가 있는 행을 제거한 결과를 result2에 저장하세요
+result2 = ___
+
+# (3) 남은 결측치를 각 열의 평균값으로 채운 결과를 result3에 저장하세요
+result3 = ___
+
+print(result1)
+print(result2)
+print(result3)`,
+      hint: `1) df.isnull().sum()
+2) df.dropna(subset=['A'])
+3) df.fillna(df.mean())`,
+      answer: `import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({'A': [1, np.nan, 3, np.nan], 'B': [np.nan, 5, 6, 7]})
+
+result1 = df.isnull().sum()
+result2 = df.dropna(subset=['A'])
+result3 = df.fillna(df.mean())
+
+print(result1)
+print(result2)
+print(result3)`
+    },
+    quiz: {
+      type: "mc",
+      question: `결측치를 "바로 앞의 값으로" 채우고 싶을 때 fillna()의 method 옵션 값은?`,
+      options: ["'ffill'", "'bfill'", "'mean'", "'pad_back'"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-4-4",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "4차시-3. 판다스, 결측치 & 이상치",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%204%EC%B0%A8%EC%8B%9C%20-3%20%ED%8C%90%EB%8B%A4%EC%8A%A4%2C%20%EA%B2%B0%EC%B8%A1%EC%B9%98%20%26%EC%9D%B4%EC%83%81%EC%B9%98.ipynb",
+    title: "19. IQR을 이용한 이상치 탐지",
+    concept: `
+      <p>이상치(outlier)는 데이터 분포에서 극단적으로 벗어난 값입니다. <b>IQR(사분위범위)</b> 방법은
+      1사분위수(<code>Q1</code>)와 3사분위수(<code>Q3</code>)를 구해 <code>IQR = Q3 - Q1</code>을 계산하고,
+      <code>Q1 - 1.5*IQR</code>보다 작거나 <code>Q3 + 1.5*IQR</code>보다 큰 값을 이상치로 판단합니다.
+      <code>df['열'].quantile(0.25)</code>, <code>quantile(0.75)</code>로 분위수를 구할 수 있습니다.</p>`,
+    example: `import pandas as pd
+
+def iqr_bounds(series):
+    q1 = series.quantile(0.25)
+    q3 = series.quantile(0.75)
+    iqr = q3 - q1
+    return q1 - 1.5 * iqr, q3 + 1.5 * iqr
+
+lower, upper = iqr_bounds(train['LotArea'])
+outliers = train[(train['LotArea'] < lower) | (train['LotArea'] > upper)]
+print(len(outliers))`,
+    practice: {
+      starter: `import pandas as pd
+
+data = pd.Series([10, 12, 11, 13, 12, 14, 100, 11, 13, 12])
+
+# (1) 1사분위수(Q1)와 3사분위수(Q3)를 구하세요
+q1 = ___
+q3 = ___
+
+# (2) IQR을 구하세요
+iqr = ___
+
+# (3) 이상치 판단 기준(하한, 상한)을 구하세요
+lower = ___
+upper = ___
+
+outliers = data[(data < lower) | (data > upper)]
+print(outliers)`,
+      hint: `1) data.quantile(0.25), data.quantile(0.75)
+2) iqr = q3 - q1
+3) lower = q1 - 1.5*iqr, upper = q3 + 1.5*iqr`,
+      answer: `import pandas as pd
+
+data = pd.Series([10, 12, 11, 13, 12, 14, 100, 11, 13, 12])
+
+q1 = data.quantile(0.25)
+q3 = data.quantile(0.75)
+
+iqr = q3 - q1
+
+lower = q1 - 1.5 * iqr
+upper = q3 + 1.5 * iqr
+
+outliers = data[(data < lower) | (data > upper)]
+print(outliers)`
+    },
+    quiz: {
+      type: "mc",
+      question: `IQR 방법에서 이상치로 판단하는 상한선 공식은?`,
+      options: ["Q3 + 1.5*IQR", "Q3 + IQR", "Q1 + 1.5*IQR", "Q3 * 1.5"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-4-5",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "4차시-4. 데이터 시각화 연습(맷플롯립)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%204%EC%B0%A8%EC%8B%9C%20-4.%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%8B%9C%EA%B0%81%ED%99%94%20%EC%97%B0%EC%8A%B5%28%EB%A7%B7%ED%94%8C%EB%A1%AF%EB%A6%BD%29.ipynb",
+    title: "20. 종합과제: 문자열 날짜 분리와 데이터 병합",
+    concept: `
+      <p>날짜가 <code>"2020-01-15"</code>처럼 문자열로 저장되어 있을 때, <code>.split('-')</code>로 연/월/일을 나눌 수 있습니다.
+      나눈 값들을 리스트로 모아 새로운 <code>DataFrame</code>을 만들고, 원본 데이터와 같은 행 순서를 유지한 채
+      <code>pd.concat([df1, df2], axis=1)</code>로 옆으로 이어붙이면 새로운 컬럼이 추가된 것처럼 합칠 수 있습니다.</p>`,
+    example: `import pandas as pd
+
+sales = pd.DataFrame({'date': ['2020-01-15', '2020-02-20'], 'amount': [100, 200]})
+
+years, months, days = [], [], []
+for d in sales['date']:
+    y, m, day = d.split('-')
+    years.append(y)
+    months.append(m)
+    days.append(day)
+
+separated = pd.DataFrame({'year': years, 'month': months, 'day': days})
+result = pd.concat([sales, separated], axis=1)
+print(result)`,
+    practice: {
+      starter: `import pandas as pd
+
+sales = pd.DataFrame({'date': ['2021-03-10', '2021-07-25', '2021-11-02'], 'amount': [50, 80, 120]})
+
+years, months, days = [], [], []
+for d in sales['date']:
+    # (1) '-'로 날짜 문자열을 나눠 연, 월, 일을 추출하세요
+    y, m, day = ___
+    years.append(y)
+    months.append(m)
+    days.append(day)
+
+# (2) year, month, day 컬럼을 가진 새 DataFrame을 만드세요
+separated = ___
+
+# (3) sales와 separated를 옆으로(열 방향) 이어붙이세요
+result = ___
+
+print(result)`,
+      hint: `1) d.split('-')
+2) pd.DataFrame({'year': years, 'month': months, 'day': days})
+3) pd.concat([sales, separated], axis=1)`,
+      answer: `import pandas as pd
+
+sales = pd.DataFrame({'date': ['2021-03-10', '2021-07-25', '2021-11-02'], 'amount': [50, 80, 120]})
+
+years, months, days = [], [], []
+for d in sales['date']:
+    y, m, day = d.split('-')
+    years.append(y)
+    months.append(m)
+    days.append(day)
+
+separated = pd.DataFrame({'year': years, 'month': months, 'day': days})
+
+result = pd.concat([sales, separated], axis=1)
+
+print(result)`
+    },
+    quiz: {
+      type: "mc",
+      question: `서로 다른 두 DataFrame을 행 순서를 유지한 채 옆으로(열 방향) 이어붙이려면?`,
+      options: ["pd.concat([df1, df2], axis=1)", "pd.concat([df1, df2], axis=0)", "df1.merge(df2)", "df1.append(df2)"],
+      correctIndex: 0
+    }
   }
 ];
 
