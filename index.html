@@ -3354,6 +3354,377 @@ print(search.best_params_)`
       options: ["GridSearchCV는 모든 조합을 탐색하고, RandomizedSearchCV는 일부만 무작위로 탐색한다", "RandomizedSearchCV는 교차검증을 사용할 수 없다", "GridSearchCV는 분류 모델에만 사용 가능하다", "두 방법 모두 항상 같은 결과를 보장한다"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w4-1-1",
+    week: "4주차 - 모의 대회(병원 개폐업 예측)",
+    notebookTitle: "1차시. 모의대회(병원)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/4%EC%A3%BC%EC%B0%A8%20-%20%EB%AA%A8%EC%9D%98%20%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%20%EA%B0%9C%ED%8F%90%EC%97%85%20%EC%98%88%EC%B8%A1%29/4%EC%A3%BC%EC%B0%A8-1%EC%B0%A8%EC%8B%9C%20%EB%AA%A8%EC%9D%98%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%29.ipynb",
+    title: "53. train과 test를 합쳐서 한번에 전처리하기",
+    concept: `
+      <p>실전 대회에서는 train에는 있지만 test에는 없는 범주값(또는 그 반대)이 있을 수 있어, 각각 따로 인코딩하면
+      서로 다른 인코더가 만들어져 충돌이 생깁니다. 이를 막기 위해 <b>구분용 컬럼</b>(예: <code>type</code>)을 각 데이터프레임에 추가해
+      어느 쪽 출신인지 표시해두고, <code>pd.concat([train, test])</code>로 행 방향으로 합쳐서 <b>하나의 데이터프레임으로 동일하게 전처리·인코딩</b>한 뒤,
+      <code>total_df[total_df['type']=='train']</code> / <code>=='test'</code> 조건으로 다시 분리해 머신러닝에 사용합니다.</p>`,
+    example: `import pandas as pd
+
+train = pd.DataFrame({'id': [1, 2], 'city': ['서울', '부산'], 'y': [1, 0]})
+test = pd.DataFrame({'id': [3, 4], 'city': ['대구', '서울']})
+
+train['type'] = 'train'
+test['type'] = 'test'
+
+total = pd.concat([train, test])
+print(total)
+
+# 합친 상태에서 인코딩 등 전처리를 동일하게 수행한 뒤 다시 분리
+real_train = total[total['type'] == 'train']
+real_test = total[total['type'] == 'test']
+print(real_train)
+print(real_test)`,
+    practice: {
+      starter: `import pandas as pd
+
+train = pd.DataFrame({'id': [1, 2], 'grade': ['A', 'B'], 'y': [1, 0]})
+test = pd.DataFrame({'id': [3, 4], 'grade': ['C', 'A']})
+
+# (1) 각 데이터프레임에 출신을 표시하는 컬럼 추가
+train['type'] = '___' (1)
+test['type'] = 'test'
+
+# (2) 두 데이터프레임을 행 방향으로 합치기
+total = pd.___([train, test]) (2)
+print(total)
+
+# (3) type 컬럼 값을 기준으로 다시 train만 분리
+real_train = total[total['type'] == '___'] (3)
+print(real_train)`,
+      hint: `(1) train 쪽임을 표시하는 문자열을 적습니다. (2) 여러 데이터프레임을 이어붙이는 pandas 함수입니다. (3) 위에서 train에 표시했던 값과 동일한 문자열을 비교 조건에 씁니다.`,
+      answer: `import pandas as pd
+
+train = pd.DataFrame({'id': [1, 2], 'grade': ['A', 'B'], 'y': [1, 0]})
+test = pd.DataFrame({'id': [3, 4], 'grade': ['C', 'A']})
+
+train['type'] = 'train'
+test['type'] = 'test'
+
+total = pd.concat([train, test])
+print(total)
+
+real_train = total[total['type'] == 'train']
+print(real_train)`
+    },
+    quiz: {
+      type: "mc",
+      question: `train과 test를 합쳐서 함께 전처리하는 주된 이유는?`,
+      options: ["한쪽에만 있는 범주값으로 인코더가 서로 달라지는 문제를 막기 위해", "데이터의 행 개수를 줄이기 위해", "결측치를 자동으로 삭제하기 위해", "모델 학습 속도를 두 배로 높이기 위해"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w4-1-2",
+    week: "4주차 - 모의 대회(병원 개폐업 예측)",
+    notebookTitle: "1차시. 모의대회(병원)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/4%EC%A3%BC%EC%B0%A8%20-%20%EB%AA%A8%EC%9D%98%20%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%20%EA%B0%9C%ED%8F%90%EC%97%85%20%EC%98%88%EC%B8%A1%29/4%EC%A3%BC%EC%B0%A8-1%EC%B0%A8%EC%8B%9C%20%EB%AA%A8%EC%9D%98%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%29.ipynb",
+    title: "54. OrdinalEncoder의 handle_unknown으로 새로운 범주 처리하기",
+    concept: `
+      <p>train으로 인코더를 학습시킨 뒤 test에 <b>train에는 없던 새로운 범주값</b>이 등장하면 일반적인 인코더는 에러를 냅니다.
+      <code>OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)</code>로 설정하면, train으로 <code>fit</code>한 인코더를
+      test에 <code>transform</code>할 때 <b>처음 보는 값은 에러 대신 지정한 값(-1)으로 처리</b>해줍니다.
+      (train+test를 합쳐서 인코딩하면 이 문제가 원천적으로 사라지지만, train만으로 인코더를 학습해야 하는 상황에서는 이 옵션이 안전장치가 됩니다.)</p>`,
+    example: `import pandas as pd
+from sklearn.preprocessing import OrdinalEncoder
+
+train = pd.DataFrame({'region': ['서울', '부산', '서울']})
+test = pd.DataFrame({'region': ['서울', '제주']})  # '제주'는 train에 없던 값
+
+oe = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
+oe.fit(train[['region']])
+
+train['region'] = oe.transform(train[['region']])
+test['region'] = oe.transform(test[['region']])  # '제주' -> -1로 처리됨
+
+print(train)
+print(test)`,
+    practice: {
+      starter: `import pandas as pd
+from sklearn.preprocessing import ___ (1)
+
+train = pd.DataFrame({'grade': ['A', 'B', 'A']})
+test = pd.DataFrame({'grade': ['A', 'C']})  # 'C'는 train에 없던 값
+
+# (2) train에 없는 값은 -1로 처리하도록 설정
+oe = OrdinalEncoder(handle_unknown='___', unknown_value=___) (2)
+oe.fit(train[['grade']])
+
+train['grade'] = oe.transform(train[['grade']])
+test['grade'] = oe.___(test[['grade']]) (3)
+
+print(test)`,
+      hint: `(1) sklearn.preprocessing에 있는 순서형 인코더 클래스 이름입니다. (2) 처음 보는 값을 어떻게 처리할지 지정하는 옵션 문자열과, 그때 사용할 값입니다. (3) 이미 학습된 인코더로 새 데이터를 변환하는 메서드입니다.`,
+      answer: `import pandas as pd
+from sklearn.preprocessing import OrdinalEncoder
+
+train = pd.DataFrame({'grade': ['A', 'B', 'A']})
+test = pd.DataFrame({'grade': ['A', 'C']})
+
+oe = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
+oe.fit(train[['grade']])
+
+train['grade'] = oe.transform(train[['grade']])
+test['grade'] = oe.transform(test[['grade']])
+
+print(test)`
+    },
+    quiz: {
+      type: "mc",
+      question: `OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)의 역할은?`,
+      options: ["fit 당시 없던 새로운 범주값을 에러 대신 지정한 값으로 처리한다", "결측치를 자동으로 평균값으로 채운다", "범주값을 항상 알파벳 순으로 정렬한다", "수치형 컬럼을 정규화한다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w4-1-3",
+    week: "4주차 - 모의 대회(병원 개폐업 예측)",
+    notebookTitle: "3차시. 병원 데이터 피드백",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/4%EC%A3%BC%EC%B0%A8%20-%20%EB%AA%A8%EC%9D%98%20%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%20%EA%B0%9C%ED%8F%90%EC%97%85%20%EC%98%88%EC%B8%A1%29/4%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%20%20-%20%EB%B3%91%EC%9B%90%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%ED%94%BC%EB%93%9C%EB%B0%B1.ipynb",
+    title: "55. 상관계수 히트맵으로 다중공선성 컬럼 찾기",
+    concept: `
+      <p><b>다중공선성</b>은 X(설명변수)들끼리 서로 강하게 관련되어 있어 모델 학습에 안 좋은 영향을 줄 수 있는 상태를 말합니다.
+      <code>df.corr().abs()</code>로 숫자형 컬럼 간 상관계수 행렬(절댓값)을 만들고 <code>sns.heatmap()</code>으로 시각화하면 한눈에 확인할 수 있습니다.
+      이후 <code>np.triu(...)</code>로 대각선 위쪽(중복 제거된 절반)만 골라낸 뒤, 임계값(예: 0.7)을 넘는 상관관계를 가진 컬럼들을 찾아
+      <b>제거 후보</b>로 분류할 수 있습니다.</p>`,
+    example: `import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame({
+    'a': [1, 2, 3, 4, 5],
+    'b': [2, 4, 6, 8, 10],   # a와 거의 같은 정보
+    'c': [5, 3, 6, 1, 9]
+})
+
+corr = df.corr().abs()
+sns.heatmap(corr, annot=True, cmap='coolwarm')
+plt.show()
+
+threshold = 0.7
+upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(bool))
+drops = [col for col in upper.columns if (upper[col] > threshold).any()]
+print(drops)`,
+    practice: {
+      starter: `import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    'x1': [1, 2, 3, 4, 5],
+    'x2': [2, 4, 6, 8, 10],
+    'x3': [5, 1, 4, 2, 9]
+})
+
+# (1) 상관계수 행렬의 절댓값 계산
+corr = df.___().abs() (1)
+
+threshold = 0.7
+# (2) 대각선 위쪽 절반만 남기기
+upper = corr.where(np.___(np.ones(corr.shape), k=1).astype(bool)) (2)
+
+# (3) 임계값을 초과하는 상관관계가 하나라도 있는 컬럼 찾기
+drops = [col for col in upper.columns if (upper[col] > threshold).___()] (3)
+print(drops)`,
+      hint: `(1) 데이터프레임의 상관계수 행렬을 구하는 메서드입니다. (2) 정사각 행렬에서 대각선 위쪽 삼각형만 1로 만드는 numpy 함수입니다. (3) "하나라도 조건을 만족하면 True"를 의미하는 pandas Series 메서드입니다.`,
+      answer: `import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    'x1': [1, 2, 3, 4, 5],
+    'x2': [2, 4, 6, 8, 10],
+    'x3': [5, 1, 4, 2, 9]
+})
+
+corr = df.corr().abs()
+
+threshold = 0.7
+upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(bool))
+
+drops = [col for col in upper.columns if (upper[col] > threshold).any()]
+print(drops)`
+    },
+    quiz: {
+      type: "mc",
+      question: `다중공선성(multicollinearity)이 의미하는 상황은?`,
+      options: ["설명변수(X)들끼리 서로 강하게 관련되어 있어 모델 학습에 안 좋은 영향을 줄 수 있는 상태", "Y(타깃) 클래스 비율이 불균형한 상태", "결측치가 한 컬럼에 몰려있는 상태", "데이터프레임의 행 개수가 컬럼 개수보다 적은 상태"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w4-1-4",
+    week: "4주차 - 모의 대회(병원 개폐업 예측)",
+    notebookTitle: "3차시. 병원 데이터 피드백",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/4%EC%A3%BC%EC%B0%A8%20-%20%EB%AA%A8%EC%9D%98%20%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%20%EA%B0%9C%ED%8F%90%EC%97%85%20%EC%98%88%EC%B8%A1%29/4%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%20%20-%20%EB%B3%91%EC%9B%90%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%ED%94%BC%EB%93%9C%EB%B0%B1.ipynb",
+    title: "56. SHAP을 이용한 피처 중요도 분석",
+    concept: `
+      <p><b>SHAP</b>은 학습된 모델에서 각 변수(피처)가 예측 결과에 얼마나, 어떤 방향으로 영향을 주는지 설명해주는 라이브러리입니다.
+      트리 계열 모델(RandomForest, XGBoost, LightGBM 등)에는 <code>shap.TreeExplainer(model)</code>을 사용하며,
+      <code>explainer(x)</code>로 각 데이터에 대한 SHAP 값을 구한 뒤 <code>shap.summary_plot(shap_values, x, plot_type='bar')</code>로
+      <b>영향력이 큰 변수 순서</b>를 시각화할 수 있습니다. 이 결과를 보고 중요도가 낮은 변수를 제거하거나, 다중공선성 분석 결과와 비교해
+      어떤 변수를 남길지 판단하는 데 활용합니다.</p>`,
+    example: `import shap
+from lightgbm import LGBMClassifier
+
+# x, y가 준비되어 있다고 가정 (x는 전처리·인코딩이 끝난 숫자형 데이터)
+model = LGBMClassifier().fit(x, y)
+
+explainer = shap.TreeExplainer(model)
+shap_values = explainer(x)
+
+shap.summary_plot(shap_values, x, plot_type='bar')`,
+    practice: {
+      starter: `import shap
+from lightgbm import ___ (1)
+
+# x, y가 준비되어 있다고 가정
+
+model = LGBMClassifier().fit(x, y)
+
+# (2) 트리 모델을 설명할 SHAP explainer 생성
+explainer = shap.___(model) (2)
+
+# (3) x에 대한 SHAP 값 계산
+shap_values = explainer(___) (3)
+
+shap.summary_plot(shap_values, x, plot_type='bar')`,
+      hint: `(1) lightgbm 패키지에서 분류용 모델 클래스 이름입니다. (2) 트리 계열 모델을 설명할 때 사용하는 SHAP 클래스 이름입니다. (3) SHAP 값을 계산할 대상 데이터를 explainer에 전달합니다.`,
+      answer: `import shap
+from lightgbm import LGBMClassifier
+
+# x, y가 준비되어 있다고 가정
+
+model = LGBMClassifier().fit(x, y)
+
+explainer = shap.TreeExplainer(model)
+
+shap_values = explainer(x)
+
+shap.summary_plot(shap_values, x, plot_type='bar')`
+    },
+    quiz: {
+      type: "mc",
+      question: `SHAP 분석을 사용하는 주된 목적은?`,
+      options: ["각 변수가 모델 예측에 얼마나/어떤 방향으로 영향을 주는지 설명하기 위해", "결측치를 자동으로 채우기 위해", "클래스 불균형을 해소하기 위해", "데이터를 군집화하기 위해"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w4-1-5",
+    week: "4주차 - 모의 대회(병원 개폐업 예측)",
+    notebookTitle: "3차시. 병원 데이터 피드백",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/4%EC%A3%BC%EC%B0%A8%20-%20%EB%AA%A8%EC%9D%98%20%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%20%EA%B0%9C%ED%8F%90%EC%97%85%20%EC%98%88%EC%B8%A1%29/4%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%20%20-%20%EB%B3%91%EC%9B%90%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%ED%94%BC%EB%93%9C%EB%B0%B1.ipynb",
+    title: "57. 박스플롯으로 판단하는 결측치 대치 전략(평균 vs 중앙값)",
+    concept: `
+      <p>결측치를 채울 때 무조건 평균을 쓰는 것은 위험합니다. <b>이상치가 많아 분포가 한쪽으로 치우친(왜도가 큰) 컬럼</b>은
+      평균이 극단값에 끌려가므로 <b>중앙값(median)</b>으로 채우는 것이 더 안전하고, 분포가 비교적 대칭적인 컬럼은 평균(mean)을 써도 무방합니다.
+      <code>sns.boxplot()</code>으로 결측치가 있는 컬럼들의 분포와 이상치 정도를 먼저 확인한 뒤,
+      <code>df[col].fillna(df[col].median(), inplace=True)</code>처럼 컬럼별로 적절한 대치값을 선택해서 채웁니다.</p>`,
+    example: `import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame({'income': [100, 110, 95, 105, 10000, None]})  # 이상치(10000)가 있는 분포
+
+sns.boxplot(data=df[['income']])
+plt.show()
+
+# 이상치가 많은 분포이므로 평균 대신 중앙값으로 대치
+median_value = df['income'].median()
+df['income'].fillna(median_value, inplace=True)
+print(df)`,
+    practice: {
+      starter: `import pandas as pd
+
+df = pd.DataFrame({'score': [50, 52, 48, 51, 999, None]})  # 999는 이상치
+
+# (1) 결측치가 있는 컬럼들 중 이상치가 많은 컬럼은 중앙값으로 대치하는 것이 안전함
+# 컬럼의 중앙값 계산
+value = df['score'].___() (1)
+
+# (2) 계산한 중앙값으로 결측치 채우기
+df['score'].___(value, inplace=True) (2)
+print(df)`,
+      hint: `(1) 평균이 아니라 가운데 값을 구하는 통계 메서드입니다. (2) 결측치(NaN)를 특정 값으로 채우는 pandas 메서드입니다.`,
+      answer: `import pandas as pd
+
+df = pd.DataFrame({'score': [50, 52, 48, 51, 999, None]})
+
+value = df['score'].median()
+
+df['score'].fillna(value, inplace=True)
+print(df)`
+    },
+    quiz: {
+      type: "mc",
+      question: `이상치가 많아 분포가 한쪽으로 치우친 컬럼의 결측치를 채울 때 평균보다 안전한 선택은?`,
+      options: ["중앙값(median)", "최댓값(max)", "0", "표준편차(std)"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w4-1-6",
+    week: "4주차 - 모의 대회(병원 개폐업 예측)",
+    notebookTitle: "3차시. 병원 데이터 피드백",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/4%EC%A3%BC%EC%B0%A8%20-%20%EB%AA%A8%EC%9D%98%20%EB%8C%80%ED%9A%8C%20%28%EB%B3%91%EC%9B%90%20%EA%B0%9C%ED%8F%90%EC%97%85%20%EC%98%88%EC%B8%A1%29/4%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%20%20-%20%EB%B3%91%EC%9B%90%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%ED%94%BC%EB%93%9C%EB%B0%B1.ipynb",
+    title: "58. SMOTE를 이용한 클래스 불균형 처리",
+    concept: `
+      <p>분류 문제에서 한 클래스(예: 폐업)가 다른 클래스(예: 개업 유지)보다 훨씬 적으면, 모델이 다수 클래스만 잘 맞추는 쪽으로 편향될 수 있습니다.
+      <b>SMOTE</b>(Synthetic Minority Over-sampling Technique)는 소수 클래스의 실제 데이터들 사이를 보간해 <b>가상의 새로운 데이터를 생성</b>해서
+      두 클래스의 비율을 맞춰주는 오버샘플링 기법입니다. <code>SMOTE(sampling_strategy='auto', random_state=42).fit_resample(X, y)</code>로
+      증강된 <code>X, y</code>를 얻을 수 있으며, 적용 전후의 클래스 비율을 파이차트 등으로 비교해 효과를 확인합니다.</p>`,
+    example: `import pandas as pd
+from imblearn.over_sampling import SMOTE
+
+X = pd.DataFrame({'a': [1,2,3,4,5,6,7,8,9,10], 'b': [1,1,2,2,3,3,4,4,5,5]})
+y = pd.Series([0,0,0,0,0,0,0,0,1,1])  # 1(소수 클래스)이 2개뿐
+
+print(y.value_counts())
+
+smote = SMOTE(sampling_strategy='auto', random_state=42)
+X_over, y_over = smote.fit_resample(X, y)
+
+print(y_over.value_counts())`,
+    practice: {
+      starter: `import pandas as pd
+from imblearn.over_sampling import ___ (1)
+
+X = pd.DataFrame({'a': [1,2,3,4,5,6,7,8], 'b': [2,3,1,4,2,3,1,4]})
+y = pd.Series([0,0,0,0,0,0,1,1])  # 1이 소수 클래스
+
+# (2) SMOTE 객체 생성 (비율 자동 맞춤, random_state=42)
+smote = ___(sampling_strategy='___', random_state=42) (2)
+
+# (3) X, y에 오버샘플링 적용
+X_over, y_over = smote.___(X, y) (3)
+
+print(y_over.value_counts())`,
+      hint: `(1) imblearn.over_sampling에 있는 오버샘플링 클래스 이름입니다. (2) 자동으로 비율을 맞춰주는 문자열 옵션입니다. (3) X와 y를 함께 증강해서 돌려주는 메서드 이름입니다.`,
+      answer: `import pandas as pd
+from imblearn.over_sampling import SMOTE
+
+X = pd.DataFrame({'a': [1,2,3,4,5,6,7,8], 'b': [2,3,1,4,2,3,1,4]})
+y = pd.Series([0,0,0,0,0,0,1,1])
+
+smote = SMOTE(sampling_strategy='auto', random_state=42)
+
+X_over, y_over = smote.fit_resample(X, y)
+
+print(y_over.value_counts())`
+    },
+    quiz: {
+      type: "mc",
+      question: `SMOTE가 클래스 불균형을 해결하는 방식은?`,
+      options: ["소수 클래스의 데이터들 사이를 보간해 가상의 새로운 데이터를 생성한다(오버샘플링)", "다수 클래스의 데이터를 무작위로 삭제한다", "모든 데이터에 라벨 인코딩을 다시 적용한다", "결측치를 평균값으로 채운다"],
+      correctIndex: 0
+    }
   }
 ];
 
