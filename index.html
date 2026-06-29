@@ -2274,6 +2274,419 @@ print(model_r2)`
       options: ["적은 코드로 여러 알고리즘 성능을 한눈에 비교할 수 있다", "모델 정확도가 자동으로 올라간다", "데이터 전처리가 필요 없어진다", "훈련 데이터가 자동으로 늘어난다"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w2-4-1",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "4차시-1. 비지도 학습 군집화",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%204%EC%B0%A8%EC%8B%9C%20%EB%B9%84%EC%A7%80%EB%8F%84%20%ED%95%99%EC%8A%B5%20%EA%B5%B0%EC%A7%91%ED%99%94.ipynb",
+    title: "37. K-Means 군집화 기초",
+    concept: `
+      <p><b>군집화(clustering)</b>는 정답(라벨) 없이 데이터의 특징만으로 비슷한 것들끼리 그룹을 묶는 비지도학습입니다.
+      <code>KMeans(n_clusters=K, max_iter=반복횟수)</code>는 K개의 중심점을 기준으로 가까운 데이터를 같은 그룹으로 묶습니다.
+      비지도학습이므로 <code>fit(X)</code>에는 정답(Y) 없이 특징(X)만 넣고, <code>predict(X)</code>로 각 데이터가 속한
+      그룹 번호를 받습니다(그룹 번호 자체는 정답 라벨과 직접 대응하지 않을 수 있습니다).</p>`,
+    example: `from sklearn.cluster import KMeans
+from sklearn import datasets
+
+data = datasets.load_iris()
+X = data.data
+
+km = KMeans(n_clusters=3, max_iter=10)
+km.fit(X)
+km_pred = km.predict(X)
+print(km_pred)`,
+    practice: {
+      starter: `from sklearn.cluster import KMeans
+from sklearn import datasets
+
+data = datasets.load_iris()
+X = data.data
+
+# (1) 군집 개수가 4개인 KMeans 객체를 만드세요
+km = ___
+
+# (2) X로 훈련하세요 (정답 없이!)
+___
+
+# (3) X에 대한 군집 예측 결과를 구하세요
+km_pred = ___
+
+print(km_pred)`,
+      hint: `1) KMeans(n_clusters=4)
+2) km.fit(X)
+3) km.predict(X)`,
+      answer: `from sklearn.cluster import KMeans
+from sklearn import datasets
+
+data = datasets.load_iris()
+X = data.data
+
+km = KMeans(n_clusters=4)
+
+km.fit(X)
+
+km_pred = km.predict(X)
+
+print(km_pred)`
+    },
+    quiz: {
+      type: "mc",
+      question: `K-Means처럼 정답(라벨) 없이 데이터를 그룹으로 묶는 학습 방식은?`,
+      options: ["비지도학습(군집화)", "지도학습(분류)", "지도학습(회귀)", "강화학습"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-4-2",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "4차시-1. 비지도 학습 군집화",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%204%EC%B0%A8%EC%8B%9C%20%EB%B9%84%EC%A7%80%EB%8F%84%20%ED%95%99%EC%8A%B5%20%EA%B5%B0%EC%A7%91%ED%99%94.ipynb",
+    title: "38. 엘보우 그래프와 실루엣 계수로 군집 평가하기",
+    concept: `
+      <p>군집화에서 가장 어려운 질문은 "몇 개로 묶는 게 적절한가?"입니다. <b>엘보우(elbow) 그래프</b>는 군집 개수(K)를
+      1부터 늘려가며 <code>model.inertia_</code>(군집 내부 거리 합)를 그려보고, 그래프가 팔꿈치처럼 급격히 꺾이는 지점을
+      적절한 K로 판단합니다. <b>실루엣 계수</b>(<code>silhouette_score(X, 예측결과)</code>)는 군집화가 얼마나 잘 됐는지를
+      하나의 점수로 알려주며 1에 가까울수록 좋습니다.</p>`,
+    example: `from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+
+scope = range(1, 10)
+inertia = []
+for k in scope:
+    model = KMeans(n_clusters=k)
+    model.fit(X)
+    inertia.append(model.inertia_)
+
+plt.plot(scope, inertia, marker='^')
+plt.show()
+
+score = silhouette_score(X, km_pred)
+print(f'실루엣 계수: {score:.2f}')`,
+    practice: {
+      starter: `from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+# (1) 군집 개수 2~6까지 각각 KMeans를 훈련시켜 inertia_ 값을 inertia 리스트에 모으세요
+scope = range(2, 7)
+inertia = []
+for k in scope:
+    model = KMeans(n_clusters=k)
+    model.fit(X)
+    inertia.append(___)
+
+# (2) 군집 3개로 훈련한 모델의 실루엣 계수를 구하세요
+km3 = KMeans(n_clusters=3)
+km3.fit(X)
+score = ___
+
+print(inertia)
+print(score)`,
+      hint: `1) model.inertia_
+2) silhouette_score(X, km3.predict(X))`,
+      answer: `from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+scope = range(2, 7)
+inertia = []
+for k in scope:
+    model = KMeans(n_clusters=k)
+    model.fit(X)
+    inertia.append(model.inertia_)
+
+km3 = KMeans(n_clusters=3)
+km3.fit(X)
+score = silhouette_score(X, km3.predict(X))
+
+print(inertia)
+print(score)`
+    },
+    quiz: {
+      type: "mc",
+      question: `군집화 결과가 얼마나 잘 됐는지를 하나의 점수(1에 가까울수록 좋음)로 평가하는 지표는?`,
+      options: ["실루엣 계수", "엘보우 값", "정확도(accuracy)", "R² 점수"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-4-3",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "4차시-1. 비지도 학습 군집화",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%204%EC%B0%A8%EC%8B%9C%20%EB%B9%84%EC%A7%80%EB%8F%84%20%ED%95%99%EC%8A%B5%20%EA%B5%B0%EC%A7%91%ED%99%94.ipynb",
+    title: "39. DBSCAN 군집화",
+    concept: `
+      <p><b>DBSCAN</b>은 K-Means처럼 군집 개수를 미리 정하지 않고, 데이터가 밀집된 영역을 찾아 군집을 만듭니다.
+      <code>DBSCAN(eps=반경, min_samples=최소이웃수)</code>에서 <code>eps</code>는 주변을 살펴볼 반경, <code>min_samples</code>는
+      그 반경 안에 몇 개 이상의 데이터가 있어야 군집으로 인정할지를 정합니다. DBSCAN은 <code>predict()</code>가 없으므로
+      <code>fit_predict(X)</code>로 훈련과 예측을 한 번에 수행합니다. 달 모양처럼 둥글지 않은 데이터에서 K-Means보다 강합니다.</p>`,
+    example: `from sklearn.cluster import DBSCAN
+from sklearn.metrics import silhouette_score
+from sklearn import datasets
+
+X, Y = datasets.make_moons(n_samples=250, noise=0.1)
+
+db = DBSCAN(eps=0.2, min_samples=3)
+db_pred = db.fit_predict(X)
+
+db_score = silhouette_score(X, db_pred)
+print(f'DBSCAN 실루엣 계수: {db_score:.2f}')`,
+    practice: {
+      starter: `from sklearn.cluster import DBSCAN
+from sklearn.metrics import silhouette_score
+from sklearn import datasets
+
+X, Y = datasets.make_moons(n_samples=200, noise=0.05)
+
+# (1) eps=0.3, min_samples=5인 DBSCAN 객체를 만드세요
+db = ___
+
+# (2) fit_predict로 훈련과 예측을 한 번에 수행하세요
+db_pred = ___
+
+# (3) 실루엣 계수를 구하세요
+score = ___
+
+print(score)`,
+      hint: `1) DBSCAN(eps=0.3, min_samples=5)
+2) db.fit_predict(X)
+3) silhouette_score(X, db_pred)`,
+      answer: `from sklearn.cluster import DBSCAN
+from sklearn.metrics import silhouette_score
+from sklearn import datasets
+
+X, Y = datasets.make_moons(n_samples=200, noise=0.05)
+
+db = DBSCAN(eps=0.3, min_samples=5)
+
+db_pred = db.fit_predict(X)
+
+score = silhouette_score(X, db_pred)
+
+print(score)`
+    },
+    quiz: {
+      type: "mc",
+      question: `DBSCAN에서 훈련과 예측을 한 번에 수행할 때 사용하는 메서드는?`,
+      options: ["fit_predict()", "predict()", "fit()만 사용", "transform()"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-4-4",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "4차시-2. 앙상블",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8-%204%EC%B0%A8%EC%8B%9C%202.%20%EC%95%99%EC%83%81%EB%B8%94.ipynb",
+    title: "40. 보팅(Voting) 앙상블",
+    concept: `
+      <p><b>앙상블</b>은 여러 개의 모델을 함께 사용해 더 나은 예측을 만드는 기법입니다. <b>보팅(Voting)</b>은 서로 다른 여러
+      모델에게 같은 데이터로 각자 예측하게 한 뒤, 다수결로 최종 답을 정합니다. <code>VotingClassifier(estimators=[('이름', 모델객체), ...])</code>처럼
+      이름과 모델을 튜플로 묶은 리스트를 전달하며, 사용법은 일반 분류기와 동일하게 <code>fit → predict → accuracy_score</code> 흐름을 따릅니다.</p>`,
+    example: `from sklearn.ensemble import VotingClassifier
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+from sklearn import datasets
+
+data = datasets.load_breast_cancer()
+X, Y = data.data, data.target
+
+vote = VotingClassifier(estimators=[
+    ('svc', SVC()), ('nb', GaussianNB()), ('knn', KNeighborsClassifier())
+])
+vote.fit(X, Y)
+v_pred = vote.predict(X)
+print(accuracy_score(Y, v_pred))`,
+    practice: {
+      starter: `from sklearn.ensemble import VotingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+from sklearn import datasets
+
+data = datasets.load_breast_cancer()
+X, Y = data.data, data.target
+
+# (1) 의사결정나무와 나이브베이즈를 묶은 VotingClassifier를 만드세요
+vote = ___
+
+# (2) X, Y로 훈련하세요
+___
+
+# (3) 예측하고 정확도를 구하세요
+v_pred = ___
+score = ___
+
+print(score)`,
+      hint: `1) VotingClassifier(estimators=[('dt', DecisionTreeClassifier()), ('nb', GaussianNB())])
+2) vote.fit(X, Y)
+3) vote.predict(X), accuracy_score(Y, v_pred)`,
+      answer: `from sklearn.ensemble import VotingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+from sklearn import datasets
+
+data = datasets.load_breast_cancer()
+X, Y = data.data, data.target
+
+vote = VotingClassifier(estimators=[
+    ('dt', DecisionTreeClassifier()), ('nb', GaussianNB())
+])
+
+vote.fit(X, Y)
+
+v_pred = vote.predict(X)
+score = accuracy_score(Y, v_pred)
+
+print(score)`
+    },
+    quiz: {
+      type: "mc",
+      question: `VotingClassifier에서 여러 모델을 전달할 때 사용하는 형식은?`,
+      options: ["estimators=[('이름', 모델객체), ...]", "models=[모델객체, ...]", "estimators={모델객체}", "votes=(모델객체,)"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-4-5",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "4차시-2. 앙상블",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8-%204%EC%B0%A8%EC%8B%9C%202.%20%EC%95%99%EC%83%81%EB%B8%94.ipynb",
+    title: "41. 배깅과 부스팅",
+    concept: `
+      <p>앙상블 방식은 크게 두 가지로 나뉩니다. <b>배깅(Bagging)</b>은 같은 종류의 모델 여러 개를 서로 다른 데이터 샘플로
+      "동시에" 학습시켜 다수결로 결정합니다(<code>BaggingClassifier(estimator=모델, n_estimators=개수)</code>) — 랜덤포레스트가
+      배깅의 대표 예시입니다. <b>부스팅(Boosting)</b>은 모델을 순서대로 학습시키며, 이전 모델이 틀린 데이터에 더 큰 가중치를
+      부여해 다음 모델이 그 부분을 더 신경쓰게 합니다(<code>AdaBoostClassifier(n_estimators=개수)</code>).</p>`,
+    example: `from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+from sklearn import datasets
+
+data = datasets.load_breast_cancer()
+X, Y = data.data, data.target
+
+bag = BaggingClassifier(estimator=DecisionTreeClassifier(), n_estimators=10)
+bag.fit(X, Y)
+print(accuracy_score(Y, bag.predict(X)))
+
+ada = AdaBoostClassifier(n_estimators=50)
+ada.fit(X, Y)
+print(accuracy_score(Y, ada.predict(X)))`,
+    practice: {
+      starter: `from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+from sklearn import datasets
+
+data = datasets.load_breast_cancer()
+X, Y = data.data, data.target
+
+# (1) 의사결정나무를 10개 사용하는 BaggingClassifier를 만들고 훈련하세요
+bag = ___
+bag.fit(X, Y)
+
+# (2) AdaBoostClassifier(n_estimators=30)를 만들고 훈련하세요
+ada = ___
+ada.fit(X, Y)
+
+# (3) 두 모델의 정확도를 각각 구하세요
+bag_score = ___
+ada_score = ___
+
+print(bag_score, ada_score)`,
+      hint: `1) BaggingClassifier(estimator=DecisionTreeClassifier(), n_estimators=10)
+2) AdaBoostClassifier(n_estimators=30)
+3) accuracy_score(Y, bag.predict(X)), accuracy_score(Y, ada.predict(X))`,
+      answer: `from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+from sklearn import datasets
+
+data = datasets.load_breast_cancer()
+X, Y = data.data, data.target
+
+bag = BaggingClassifier(estimator=DecisionTreeClassifier(), n_estimators=10)
+bag.fit(X, Y)
+
+ada = AdaBoostClassifier(n_estimators=30)
+ada.fit(X, Y)
+
+bag_score = accuracy_score(Y, bag.predict(X))
+ada_score = accuracy_score(Y, ada.predict(X))
+
+print(bag_score, ada_score)`
+    },
+    quiz: {
+      type: "mc",
+      question: `이전 모델이 틀린 데이터에 더 큰 가중치를 부여해 순서대로 학습시키는 앙상블 방식은?`,
+      options: ["부스팅(Boosting)", "배깅(Bagging)", "보팅(Voting)", "군집화(Clustering)"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-4-6",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "4차시-3. 인코더",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8-4%EC%B0%A8%EC%8B%9C.%203.%20%EC%9D%B8%EC%BD%94%EB%8D%94.ipynb",
+    title: "42. 라벨 인코딩과 원-핫 인코딩",
+    concept: `
+      <p>머신러닝 모델은 숫자만 다룰 수 있어서 문자열 범주를 숫자로 바꾸는 <b>인코딩</b>이 필요합니다.
+      <b>라벨 인코딩</b>(<code>LabelEncoder().fit_transform(데이터)</code>)은 각 범주에 0,1,2...처럼 순서대로 번호를 붙입니다 —
+      간편하지만 숫자 크기에 우열이 없는데도 있는 것처럼 오해될 수 있습니다. <b>원-핫 인코딩</b>(<code>OneHotEncoder(sparse_output=False)</code>)은
+      범주 개수만큼 열을 만들어 해당하는 자리만 1, 나머지는 0으로 표시해 우열 문제를 없애지만 열이 많아질 수 있습니다.</p>`,
+    example: `import pandas as pd
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+df = pd.DataFrame({'Color': ['R', 'G', 'B', 'G', 'B']})
+
+le = LabelEncoder()
+color = le.fit_transform(df)
+print(color)
+
+oh = OneHotEncoder(sparse_output=False)
+result = oh.fit_transform(df)
+print(result)`,
+    practice: {
+      starter: `import pandas as pd
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+df = pd.DataFrame({'Type': ['전세', '월세', '자가', '월세', '자가']})
+
+# (1) LabelEncoder 객체를 만들어 df를 인코딩하세요
+le = ___
+label_result = ___
+
+# (2) OneHotEncoder(sparse_output=False) 객체를 만들어 df를 인코딩하세요
+oh = ___
+onehot_result = ___
+
+print(label_result)
+print(onehot_result)`,
+      hint: `1) LabelEncoder(), le.fit_transform(df)
+2) OneHotEncoder(sparse_output=False), oh.fit_transform(df)`,
+      answer: `import pandas as pd
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+df = pd.DataFrame({'Type': ['전세', '월세', '자가', '월세', '자가']})
+
+le = LabelEncoder()
+label_result = le.fit_transform(df)
+
+oh = OneHotEncoder(sparse_output=False)
+onehot_result = oh.fit_transform(df)
+
+print(label_result)
+print(onehot_result)`
+    },
+    quiz: {
+      type: "mc",
+      question: `범주형 데이터를 숫자로 바꿀 때, 우열 관계로 오해될 수 있는 단점이 있는 인코딩 방식은?`,
+      options: ["라벨 인코딩", "원-핫 인코딩", "바이너리 인코딩", "프리퀀시 인코딩"],
+      correctIndex: 0
+    }
   }
 ];
 
