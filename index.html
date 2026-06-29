@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코딩 리뷰 학습 플랫폼 - SeSAc 영등포 8기</title>
+
+<!-- Prism.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+<!-- CodeMirror -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+
+<!-- html2pdf (오답 모음 PDF 내보내기) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+  :root{
+    --blue:#3b82f6; --blue-bg:#eff6ff;
+    --purple:#8b5cf6; --purple-bg:#f5f3ff;
+    --green:#10b981; --green-bg:#ecfdf5;
+    --yellow:#f59e0b; --yellow-bg:#fffbeb;
+    --text:#1f2937; --sub:#6b7280; --border:#e5e7eb;
+    --sidebar-w:300px; --header-h:64px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',-apple-system,'Malgun Gothic',sans-serif;color:var(--text);background:#fafafa;}
+
+  /* Header */
+  header{
+    position:fixed;top:0;left:0;right:0;height:var(--header-h);
+    background:#fff;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 20px;z-index:100;
+  }
+  header .title-block{display:flex;align-items:center;gap:12px;}
+  header h1{font-size:17px;margin:0;}
+  header .source{font-size:12px;color:var(--sub);}
+  #menuToggle{display:none;background:none;border:none;font-size:22px;cursor:pointer;margin-right:8px;}
+  .colab-btn{
+    background:#fef08a;border:1px solid #eab308;color:#713f12;
+    padding:8px 14px;border-radius:8px;font-size:13px;text-decoration:none;font-weight:600;
+    white-space:nowrap;
+  }
+
+  /* Sidebar */
+  #sidebar{
+    position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);
+    background:#fff;border-right:1px solid var(--border);overflow-y:auto;padding:16px;
+    z-index:90;
+  }
+  .progress-wrap{margin-bottom:18px;}
+  .progress-label{font-size:13px;color:var(--sub);margin-bottom:6px;display:flex;justify-content:space-between;}
+  .progress-bar-bg{background:var(--border);border-radius:8px;height:10px;overflow:hidden;}
+  .progress-bar-fill{background:linear-gradient(90deg,var(--blue),var(--green));height:100%;width:0%;transition:width .4s;}
+
+  .week-block{margin-bottom:10px;}
+  .week-header{
+    cursor:pointer;font-weight:700;font-size:14px;padding:8px 10px;border-radius:8px;
+    background:#f3f4f6;display:flex;justify-content:space-between;align-items:center;
+  }
+  .week-header:hover{background:#e5e7eb;}
+  .chapter-list{list-style:none;margin:6px 0 0 0;padding-left:6px;}
+  .chapter-list li a{
+    display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;
+    color:var(--sub);text-decoration:none;font-size:13px;
+  }
+  .chapter-list li a:hover{background:var(--blue-bg);color:var(--blue);}
+  .chapter-list li a.active{background:var(--blue-bg);color:var(--blue);font-weight:700;}
+  .chk{font-size:12px;}
+  .chk.done{color:var(--green);}
+
+  /* Main */
+  main{margin-left:var(--sidebar-w);margin-top:var(--header-h);padding:32px 40px;max-width:880px;}
+
+  .chapter-section{margin-bottom:70px;scroll-margin-top:80px;}
+  .chapter-section h2{font-size:24px;border-bottom:3px solid var(--text);padding-bottom:10px;}
+
+  .block{border-radius:12px;padding:20px 22px;margin:18px 0;border:1px solid var(--border);}
+  .block-label{font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:10px;display:inline-block;padding:3px 10px;border-radius:20px;}
+
+  .concept{background:var(--blue-bg);}
+  .concept .block-label{background:var(--blue);color:#fff;}
+  .concept table{width:100%;border-collapse:collapse;margin-top:10px;background:#fff;font-size:13px;}
+  .concept table th,.concept table td{border:1px solid var(--border);padding:8px;text-align:left;}
+  .concept code{background:#fff;padding:2px 5px;border-radius:4px;border:1px solid var(--border);}
+
+  .example{background:var(--purple-bg);}
+  .example .block-label{background:var(--purple);color:#fff;}
+  .code-wrap{position:relative;}
+  .copy-btn{
+    position:absolute;top:8px;right:8px;background:#fff;border:1px solid var(--border);
+    border-radius:6px;font-size:12px;padding:4px 9px;cursor:pointer;
+  }
+  pre{margin:0;border-radius:8px;font-size:13px;}
+
+  .practice{background:var(--green-bg);}
+  .practice .block-label{background:var(--green);color:#fff;}
+  .CodeMirror{height:auto;min-height:140px;border-radius:8px;font-size:13.5px;}
+  .practice-controls{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{
+    border:none;border-radius:7px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600;
+  }
+  .btn-hint{background:#fef3c7;color:#92400e;}
+  .btn-answer{background:#dbeafe;color:#1e40af;}
+  .btn-colab{background:#fde68a;color:#713f12;}
+  .reveal-box{display:none;margin-top:10px;background:#fff;border:1px dashed var(--border);border-radius:8px;padding:12px;font-size:13.5px;}
+  .reveal-box.show{display:block;}
+
+  .quiz{background:var(--yellow-bg);}
+  .quiz .block-label{background:var(--yellow);color:#fff;}
+  .quiz-opts{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .quiz-opt{
+    background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;
+    cursor:pointer;font-size:13.5px;text-align:left;
+  }
+  .quiz-opt:hover{border-color:var(--yellow);}
+  .quiz-opt.correct{background:#dcfce7;border-color:#16a34a;}
+  .quiz-opt.wrong{background:#fee2e2;border-color:#dc2626;}
+  .quiz-feedback{margin-top:8px;font-size:13px;font-weight:700;}
+  .btn-review{
+    background:#fee2e2;color:#991b1b;border:none;border-radius:7px;
+    padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;margin-top:8px;
+  }
+  .btn-review:hover{background:#fecaca;}
+
+  .wrong-panel-btn{
+    width:100%;background:#fff1f2;border:1px solid #fda4af;color:#9f1239;
+    font-weight:700;font-size:13px;padding:10px;border-radius:8px;cursor:pointer;
+    margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .wrong-panel-btn:hover{background:#ffe4e6;}
+  #wrongCount{background:#e11d48;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;}
+
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;
+    align-items:center;justify-content:center;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:#fff;border-radius:14px;width:min(640px,92vw);max-height:80vh;
+    overflow-y:auto;padding:0;
+  }
+  .modal-header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;
+  }
+  .modal-header h3{margin:0;font-size:17px;}
+  .modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--sub);}
+  .modal-header-actions{display:flex;align-items:center;gap:10px;}
+  .btn-pdf{
+    background:var(--blue);color:#fff;border:none;border-radius:7px;
+    padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  .btn-pdf:hover{background:#2563eb;}
+  .btn-pdf:disabled{background:#9ca3af;cursor:not-allowed;}
+  #wrongModalBody .btn-goto{ }
+  .pdf-export-header{display:none;}
+  .pdf-export-header.show-for-pdf{display:block;margin-bottom:14px;}
+  .pdf-export-header h2{margin:0 0 4px;font-size:18px;}
+  .pdf-export-header p{margin:0;font-size:12px;color:var(--sub);}
+  .modal-body{padding:10px 22px 22px;}
+  .wrong-item{
+    border:1px solid var(--border);border-left:4px solid #e11d48;border-radius:8px;
+    padding:14px 16px;margin:14px 0;
+  }
+  .wrong-item .w-chapter{font-size:12px;color:var(--sub);margin-bottom:4px;}
+  .wrong-item .w-question{font-weight:700;font-size:14px;margin-bottom:8px;}
+  .wrong-item .w-row{font-size:13px;margin:3px 0;}
+  .wrong-item .w-your{color:#b91c1c;}
+  .wrong-item .w-correct{color:#15803d;}
+  .wrong-item .btn-goto{
+    margin-top:10px;background:var(--blue);color:#fff;border:none;border-radius:6px;
+    padding:6px 12px;font-size:12.5px;cursor:pointer;font-weight:600;
+  }
+  .empty-wrong{color:var(--sub);font-size:13.5px;text-align:center;padding:30px 0;}
+
+  @media (max-width: 900px){
+    #menuToggle{display:inline-block;}
+    #sidebar{transform:translateX(-105%);transition:transform .25s;width:80%;}
+    #sidebar.open{transform:translateX(0);}
+    main{margin-left:0;padding:24px 18px;}
+    header .source{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <button id="menuToggle">☰</button>
+    <div>
+      <h1>코딩 리뷰 학습 플랫폼</h1>
+      <div class="source">SeSAc 영등포 8기 교안 기반 · 이론 + 실습 통합 학습</div>
+    </div>
+  </div>
+  <a class="colab-btn" id="colabBtnHeader" href="#" target="_blank" rel="noopener">📓 원본 Colab/노트북 열기</a>
+</header>
+
+<nav id="sidebar">
+  <div class="progress-wrap">
+    <div class="progress-label"><span>전체 진행률</span><span id="progressText">0%</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+  </div>
+  <button id="wrongPanelBtn" class="wrong-panel-btn">📕 오답 모아보기 <span id="wrongCount">0</span></button>
+  <div id="navTree"></div>
+</nav>
+
+<main id="mainContent"></main>
+
+<div id="wrongModalOverlay" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>📕 오답 모아보기</h3>
+      <div class="modal-header-actions">
+        <button id="wrongPdfBtn" class="btn-pdf">⬇ PDF로 내보내기</button>
+        <button id="wrongModalClose" class="modal-close">✕</button>
+      </div>
+    </div>
+    <div id="wrongModalBody" class="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   챕터 데이터 - 주차/노트북이 늘어날 때마다 이 배열에
+   객체를 추가하면 사이드바/본문/퀴즈가 자동 생성됩니다.
+========================================================= */
+const CHAPTERS = [
+  {
+    id: "w1-1-1",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "1차시. 변수와 연산자",
+    notebookUrl: "https://colab.research.google.com/drive/1MzQKqd84F8ezRbC9W4cx0hlTbfGYPyfo",
+    title: "1. 변수와 자료형 기초",
+    concept: `
+      <p>파이썬의 <b>변수</b>는 <code>변수명 = 값</code> 형태로 정의하며, 데이터의 종류에 따라
+      <b>단수형(int, float, string, bool)</b>으로 나뉩니다. 문자열은 다양한 메서드로 가공할 수 있습니다.</p>
+      <table>
+        <tr><th>메서드</th><th>역할</th></tr>
+        <tr><td><code>.lower() / .upper()</code></td><td>소문자화 / 대문자화</td></tr>
+        <tr><td><code>.strip()</code></td><td>양쪽 공백 제거 (lstrip/rstrip은 한쪽만)</td></tr>
+        <tr><td><code>.replace(A, B)</code></td><td>문자열 A를 B로 치환</td></tr>
+        <tr><td><code>.split(sep)</code></td><td>구분자 기준으로 문자열을 리스트로 분리</td></tr>
+        <tr><td><code>'sep'.join(seq)</code></td><td>리스트(시퀀스)를 구분자로 이어붙임</td></tr>
+      </table>`,
+    example: `comment = " I love programming "
+print(comment.strip())     # 양쪽 공백 제거
+print(comment.replace('programming', 'ai'))
+print(comment.split(' '))  # 공백 기준 분리
+print('-'.join('abc'))     # 문자 사이에 구분자 삽입`,
+    practice: {
+      starter: `comment = "  I Love Coding Review  "
+
+# (1) 공백 제거 + 소문자 변환 후 cleaned에 저장하세요
+cleaned = ___
+
+# (2) cleaned에서 "coding"을 "data"로 바꿔 replaced에 저장하세요
+replaced = ___
+
+# (3) cleaned를 공백 기준으로 나눠 words에 저장하고, 단어 개수를 출력하세요
+words = ___
+print(cleaned)
+print(replaced)
+print(words, len(words))`,
+      hint: `1) strip()과 lower()는 메서드 체이닝(.strip().lower())으로 한 번에 적용할 수 있어요.
+2) replace()는 두 개의 인자를 받습니다: 바꿀 대상, 바꿀 내용.
+3) split()의 기본 구분자는 공백이고, 결과는 리스트입니다. len()으로 개수를 셀 수 있어요.`,
+      answer: `comment = "  I Love Coding Review  "
+cleaned = comment.strip().lower()
+replaced = cleaned.replace("coding", "data")
+words = cleaned.split(" ")
+print(cleaned)
+print(replaced)
+print(words, len(words))`
+    },
+    quiz: {
+      type: "mc",
+      question: `다음 중 문자열 양쪽의 공백만 제거하는 메서드는?`,
+      options: ["replace()", "strip()", "split()", "join()"],
+      correctIndex: 1
+    }
+  },
+  {
+    id: "w1-1-2",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "1차시. 변수와 연산자",
+    notebookUrl: "https://colab.research.google.com/drive/1MzQKqd84F8ezRbC9W4cx0hlTbfGYPyfo",
+    title: "2. 컬렉션 타입 (튜플 / 셋 / 리스트 / 딕셔너리)",
+    concept: `
+      <p>여러 값을 담는 복수형 자료형은 <b>변형 가능 여부</b>와 <b>순서 여부</b>로 구분됩니다.</p>
+      <table>
+        <tr><th>자료형</th><th>표기</th><th>변형 가능</th><th>순서(인덱싱)</th></tr>
+        <tr><td>튜플</td><td><code>()</code></td><td>X</td><td>O</td></tr>
+        <tr><td>셋</td><td><code>{}</code></td><td>O</td><td>X</td></tr>
+        <tr><td>리스트</td><td><code>[]</code></td><td>O</td><td>O</td></tr>
+        <tr><td>딕셔너리</td><td><code>{키:값}</code></td><td>O</td><td>X (키로 접근)</td></tr>
+      </table>
+      <p>리스트/튜플은 <code>[시작:끝:스텝]</code> 형태의 <b>슬라이싱</b>이 가능하며, 끝 인덱스는 포함되지 않습니다.</p>`,
+    example: `week = ['월', '화', '수', '목', '금', '토', '일']
+print(week[0:4])      # 월~목
+print(week[-2:])      # 토, 일
+
+D1 = {'A': 1, 'B': 'C'}
+D1['새싹'] = '8기'     # 추가
+del D1['A']            # 삭제
+for k, v in D1.items():
+    print(k, '->', v)`,
+    practice: {
+      starter: `attendance = {'월': '출석', '화': '출석', '수': '지각', '목': '결석', '금': '출석'}
+
+# (1) '토': '휴일' 키-값을 추가하세요
+___
+
+# (2) '목' 키를 삭제하세요
+___
+
+# (3) "요일 : 상태" 형식으로 한 줄씩 출력하세요
+for ___ in attendance.items():
+    print(___)`,
+      hint: `1) 딕셔너리 추가는 D[새키] = 값 형태입니다.
+2) 삭제는 del D[키]를 사용합니다.
+3) .items()는 (키, 값) 튜플을 반환하므로 for k, v in ... 형태로 풀어 받을 수 있어요. f-string으로 출력해보세요.`,
+      answer: `attendance = {'월': '출석', '화': '출석', '수': '지각', '목': '결석', '금': '출석'}
+attendance['토'] = '휴일'
+del attendance['목']
+
+for day, status in attendance.items():
+    print(f'{day} : {status}')`
+    },
+    quiz: {
+      type: "ox",
+      question: `셋(set)은 인덱싱으로 특정 위치의 값을 가져올 수 있다. (O/X)`,
+      options: ["O", "X"],
+      correctIndex: 1
+    }
+  },
+  {
+    id: "w1-1-3",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "1차시. 변수와 연산자",
+    notebookUrl: "https://colab.research.google.com/drive/1MzQKqd84F8ezRbC9W4cx0hlTbfGYPyfo",
+    title: "3. 조건문 (if / elif / else)",
+    concept: `
+      <p>조건문은 <code>if - elif - else</code> 구조로 작성하며, 비교 연산자(<code>&gt;,&gt;=,&lt;,&lt;=,==,!=</code>)와
+      논리 연산자(<code>and, or, not</code>), 그리고 <code>in</code> 연산자로 여러 값 중 포함 여부를 검사할 수 있습니다.
+      <code>input()</code>으로 받은 값은 항상 <b>문자열</b>이므로 비교 전 형변환이 필요합니다.</p>`,
+    example: `number = input('숫자를 입력하시오')
+number = float(number)   # 형변환
+bar = 11
+
+if number > bar:
+    print(f'{bar}보다 큼')
+else:
+    print(f'{bar}보다 작음')
+
+# in 연산자로 여러 값 검사
+people = 2
+if people in (2, 4):
+    print('여자')
+elif people in (1, 3):
+    print('남자')
+else:
+    print('미등록')`,
+      practice: {
+      starter: `score = 78
+
+# (1) score가 90 이상이면 "A", 70 이상이면 "B", 그 외에는 "C"를 grade에 저장하세요
+if ___:
+    grade = "A"
+elif ___:
+    grade = "B"
+else:
+    grade = "C"
+
+# (2) grade를 f-string으로 "등급: B" 형식으로 출력하세요
+print(___)`,
+      hint: `1) elif는 위 조건이 거짓일 때만 검사하므로, 90 이상 조건을 먼저 적어야 70 이상 조건이 의미를 가집니다.
+2) f-string은 f"등급: {변수}" 형태로 작성합니다.`,
+      answer: `score = 78
+
+if score >= 90:
+    grade = "A"
+elif score >= 70:
+    grade = "B"
+else:
+    grade = "C"
+
+print(f"등급: {grade}")`
+    },
+    quiz: {
+      type: "mc",
+      question: `input()으로 입력받은 "10"이라는 값을 숫자 비교에 사용하기 위해 필요한 작업은?`,
+      options: ["그대로 비교한다", "형변환(int/float)을 먼저 한다", "정렬한다", "딕셔너리로 바꾼다"],
+      correctIndex: 1
+    }
+  },
+  {
+    id: "w1-1-4",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "1차시. 변수와 연산자",
+    notebookUrl: "https://colab.research.google.com/drive/1MzQKqd84F8ezRbC9W4cx0hlTbfGYPyfo",
+    title: "4. 반복문 (for / while)",
+    concept: `
+      <p><b>for</b>는 반복 횟수(길이)가 정해져 있을 때, <b>while</b>은 조건이 유지되는 동안 반복할 때 사용합니다.
+      <code>enumerate()</code>는 (인덱스, 값)을 동시에, <code>zip()</code>은 여러 시퀀스를 같은 위치끼리 묶어줍니다.</p>`,
+    example: `listA = [1, 2, 3, 4]
+for i, v in enumerate(listA):
+    print(i, '--->', v)
+
+count = 0
+while True:
+    if count > 3:
+        break
+    print(count)
+    count += 1`,
+    practice: {
+      starter: `scores = [78, 45, 92, 88, 33, 67, 100]
+total = 0
+
+# (1) enumerate를 사용해 인덱스와 점수를 함께 출력하세요
+for ___ in enumerate(scores):
+    print(___)
+
+    # (2) 점수가 60 이상이면 "통과", 아니면 "재시험" 출력
+    if ___:
+        print("통과")
+    else:
+        print("재시험")
+
+    # (3) 짝수 인덱스(0,2,4...)의 점수만 total에 누적하세요
+    if ___:
+        total += score
+
+print("짝수 인덱스 합계:", total)`,
+      hint: `1) enumerate(scores)는 (i, score) 형태의 튜플을 반환합니다. for i, score in enumerate(scores):
+2) 비교 연산자 >=를 사용하세요.
+3) 짝수 판별은 i % 2 == 0 입니다.`,
+      answer: `scores = [78, 45, 92, 88, 33, 67, 100]
+total = 0
+
+for i, score in enumerate(scores):
+    print(i, score)
+
+    if score >= 60:
+        print("통과")
+    else:
+        print("재시험")
+
+    if i % 2 == 0:
+        total += score
+
+print("짝수 인덱스 합계:", total)`
+    },
+    quiz: {
+      type: "mc",
+      question: `리스트의 인덱스와 값을 동시에 얻고 싶을 때 사용하는 함수는?`,
+      options: ["zip()", "enumerate()", "range()", "len()"],
+      correctIndex: 1
+    }
+  },
+  {
+    id: "w1-1-5",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "1차시. 변수와 연산자",
+    notebookUrl: "https://colab.research.google.com/drive/1MzQKqd84F8ezRbC9W4cx0hlTbfGYPyfo",
+    title: "5. 종합 과제 (FizzBuzz / 구간 합 / 카운트다운)",
+    concept: `
+      <p>지금까지 배운 변수, 조건문, 반복문을 종합해 대표적인 알고리즘 연습 문제인
+      <b>FizzBuzz</b>를 풀어봅니다. 핵심은 <b>조건의 우선순위</b>입니다 — 더 좁은 조건(공배수)을
+      넓은 조건(3의 배수, 5의 배수)보다 먼저 검사해야 합니다.</p>`,
+    example: `for i in range(1, 16):
+    if i % 3 == 0 and i % 5 == 0:
+        print("FizzBuzz")
+    elif i % 3 == 0:
+        print("Fizz")
+    elif i % 5 == 0:
+        print("Buzz")
+    else:
+        print(i)`,
+    practice: {
+      starter: `num1 = -3
+num2 = 5
+
+# (1) num1이 num2보다 작은지 확인하는 조건문을 작성하세요
+if ___:
+    add = 0
+    # (2) num1부터 num2까지(포함) 반복하며 add에 누적하세요
+    for i in range(___, ___):
+        add += i
+    print(f'결과는 {add} 입니다.')
+else:
+    print('조건이 맞지 않습니다.')`,
+      hint: `1) 비교 연산자 <를 사용합니다.
+2) range(시작, 끝)에서 끝 값은 포함되지 않으므로, num2를 포함시키려면 num2+1을 끝값으로 넣어야 합니다.`,
+      answer: `num1 = -3
+num2 = 5
+
+if num1 < num2:
+    add = 0
+    for i in range(num1, num2 + 1):
+        add += i
+    print(f'결과는 {add} 입니다.')
+else:
+    print('조건이 맞지 않습니다.')`
+    },
+    quiz: {
+      type: "ox",
+      question: `FizzBuzz 문제에서 "3과 5의 공배수" 조건은 "3의 배수" 조건보다 먼저 검사해야 한다. (O/X)`,
+      options: ["O", "X"],
+      correctIndex: 0
+    }
+  }
+];
+
+/* =========================================================
+   렌더링 로직
+========================================================= */
+const STORAGE_KEY = "ssac-learning-progress";
+const WRONG_KEY = "ssac-learning-wrong";
+
+function loadJSON(key){
+  try{ return JSON.parse(localStorage.getItem(key)) || {}; }catch(e){ return {}; }
+}
+function persistJSON(key, obj){
+  try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){ /* storage unavailable (e.g. sandboxed preview) - keep working in-memory */ }
+}
+
+// in-memory state is the source of truth; localStorage is best-effort persistence on top of it
+let progressState = loadJSON(STORAGE_KEY);
+let wrongState = loadJSON(WRONG_KEY);
+
+function getProgress(){ return progressState; }
+function saveProgress(p){ progressState = p; persistJSON(STORAGE_KEY, p); }
+
+function getWrongAnswers(){ return wrongState; }
+function saveWrongAnswers(w){ wrongState = w; persistJSON(WRONG_KEY, w); }
+
+function buildSidebar(){
+  const tree = document.getElementById("navTree");
+  const weeks = [...new Set(CHAPTERS.map(c => c.week))];
+  tree.innerHTML = weeks.map(week => {
+    const items = CHAPTERS.filter(c => c.week === week);
+    return `
+      <div class="week-block">
+        <div class="week-header" data-week="${week}">${week} <span>▾</span></div>
+        <ul class="chapter-list">
+          ${items.map(c => `
+            <li><a href="#${c.id}" data-id="${c.id}">
+              <span class="chk" id="chk-${c.id}">○</span> ${c.title}
+            </a></li>`).join("")}
+        </ul>
+      </div>`;
+  }).join("");
+
+  tree.querySelectorAll(".week-header").forEach(h => {
+    h.addEventListener("click", () => {
+      const list = h.nextElementSibling;
+      list.style.display = list.style.display === "none" ? "block" : "none";
+    });
+  });
+}
+
+function buildMain(){
+  const main = document.getElementById("mainContent");
+  main.innerHTML = CHAPTERS.map(c => `
+    <section class="chapter-section" id="${c.id}">
+      <h2>${c.title}</h2>
+
+      <div class="block concept">
+        <span class="block-label">📖 개념 설명</span>
+        ${c.concept}
+      </div>
+
+      <div class="block example">
+        <span class="block-label">💡 예제 코드</span>
+        <div class="code-wrap">
+          <button class="copy-btn" data-code-id="ex-${c.id}">복사</button>
+          <pre><code class="language-python" id="ex-${c.id}">${escapeHtml(c.example)}</code></pre>
+        </div>
+      </div>
+
+      <div class="block practice">
+        <span class="block-label">✏️ 실습 에디터</span>
+        <textarea id="editor-${c.id}">${escapeHtml(c.practice.starter)}</textarea>
+        <div class="practice-controls">
+          <button class="btn btn-hint" data-target="hint-${c.id}">힌트 보기</button>
+          <button class="btn btn-answer" data-target="ans-${c.id}">정답 보기</button>
+          <a class="btn btn-colab" href="${c.notebookUrl}" target="_blank" rel="noopener">📓 Colab에서 실행</a>
+        </div>
+        <div class="reveal-box" id="hint-${c.id}">${escapeHtml(c.practice.hint)}</div>
+        <div class="reveal-box" id="ans-${c.id}"><pre><code class="language-python">${escapeHtml(c.practice.answer)}</code></pre></div>
+      </div>
+
+      <div class="block quiz" data-quiz-id="${c.id}">
+        <span class="block-label">❓ 개념 확인 퀴즈</span>
+        <p>${c.quiz.question}</p>
+        <div class="quiz-opts">
+          ${c.quiz.options.map((opt, idx) => `<button class="quiz-opt" data-idx="${idx}">${opt}</button>`).join("")}
+        </div>
+        <div class="quiz-feedback"></div>
+      </div>
+    </section>
+  `).join("");
+}
+
+function escapeHtml(str){
+  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function initCodeMirrors(){
+  CHAPTERS.forEach(c => {
+    CodeMirror.fromTextArea(document.getElementById(`editor-${c.id}`), {
+      mode: "python",
+      theme: "dracula",
+      lineNumbers: true,
+      viewportMargin: Infinity
+    });
+  });
+}
+
+function initRevealButtons(){
+  document.querySelectorAll(".btn-hint, .btn-answer").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = document.getElementById(btn.dataset.target);
+      target.classList.toggle("show");
+    });
+  });
+}
+
+function initCopyButtons(){
+  document.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const code = document.getElementById(btn.dataset.codeId).innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const old = btn.innerText;
+        btn.innerText = "복사됨!";
+        setTimeout(() => btn.innerText = old, 1200);
+      });
+    });
+  });
+}
+
+function initQuizzes(){
+  const progress = getProgress();
+  document.querySelectorAll(".quiz").forEach(quizEl => {
+    const id = quizEl.dataset.quizId;
+    const chapter = CHAPTERS.find(c => c.id === id);
+    const feedback = quizEl.querySelector(".quiz-feedback");
+
+    if(progress[id]){
+      markChapterDone(id);
+      const correctBtn = quizEl.querySelectorAll(".quiz-opt")[chapter.quiz.correctIndex];
+      if(correctBtn) correctBtn.classList.add("correct");
+      feedback.textContent = "✅ 이미 정답을 맞췄습니다!";
+      feedback.style.color = "#15803d";
+    }
+
+    quizEl.querySelectorAll(".quiz-opt").forEach((opt, idx) => {
+      opt.addEventListener("click", () => {
+        quizEl.querySelectorAll(".quiz-opt").forEach(o => o.classList.remove("correct","wrong"));
+        removeReviewButton(quizEl);
+
+        if(idx === chapter.quiz.correctIndex){
+          opt.classList.add("correct");
+          feedback.textContent = "✅ 정답입니다!";
+          feedback.style.color = "#15803d";
+          if(!progress[id]){
+            progress[id] = true;
+            saveProgress(progress);
+            markChapterDone(id);
+            updateProgressBar();
+          }
+          const wrong = getWrongAnswers();
+          if(wrong[id]){
+            delete wrong[id];
+            saveWrongAnswers(wrong);
+            renderWrongPanelButton();
+          }
+        } else {
+          opt.classList.add("wrong");
+          feedback.textContent = "❌ 다시 생각해보세요.";
+          feedback.style.color = "#b91c1c";
+
+          const wrong = getWrongAnswers();
+          wrong[id] = {
+            chapterTitle: chapter.title,
+            question: chapter.quiz.question,
+            yourAnswer: chapter.quiz.options[idx],
+            correctAnswer: chapter.quiz.options[chapter.quiz.correctIndex]
+          };
+          saveWrongAnswers(wrong);
+          renderWrongPanelButton();
+
+          addReviewButton(quizEl, chapter, feedback);
+        }
+      });
+    });
+  });
+}
+
+function addReviewButton(quizEl, chapter, feedback){
+  const btn = document.createElement("button");
+  btn.className = "btn-review";
+  btn.textContent = "📖 이 개념 다시 보기";
+  btn.addEventListener("click", () => {
+    document.getElementById(chapter.id).scrollIntoView({behavior:"smooth", block:"start"});
+    closeWrongModal();
+  });
+  feedback.insertAdjacentElement("afterend", btn);
+}
+
+function removeReviewButton(quizEl){
+  const existing = quizEl.querySelector(".btn-review");
+  if(existing) existing.remove();
+}
+
+function renderWrongPanelButton(){
+  const wrong = getWrongAnswers();
+  const count = Object.keys(wrong).length;
+  document.getElementById("wrongCount").textContent = count;
+}
+
+function renderWrongModalBody(){
+  const wrong = getWrongAnswers();
+  const body = document.getElementById("wrongModalBody");
+  const entries = Object.entries(wrong);
+
+  document.getElementById("wrongPdfBtn").disabled = entries.length === 0;
+
+  if(entries.length === 0){
+    body.innerHTML = `<div class="empty-wrong">아직 틀린 문제가 없습니다. 🎉</div>`;
+    return;
+  }
+
+  const pdfHeader = `
+    <div class="pdf-export-header">
+      <h2>📕 오답 모음 - 코딩 리뷰 학습 플랫폼</h2>
+      <p>내보낸 날짜: ${new Date().toLocaleString("ko-KR")} · 총 ${entries.length}문항</p>
+    </div>`;
+
+  body.innerHTML = pdfHeader + entries.map(([id, w]) => `
+    <div class="wrong-item">
+      <div class="w-chapter">${w.chapterTitle}</div>
+      <div class="w-question">${w.question}</div>
+      <div class="w-row w-your">내 답변: ${w.yourAnswer}</div>
+      <div class="w-row w-correct">정답: ${w.correctAnswer}</div>
+      <button class="btn-goto" data-goto="${id}">이 챕터 개념 다시 보기 →</button>
+    </div>
+  `).join("");
+
+  body.querySelectorAll(".btn-goto").forEach(btn => {
+    btn.addEventListener("click", () => {
+      closeWrongModal();
+      const target = document.getElementById(btn.dataset.goto);
+      setTimeout(() => target.scrollIntoView({behavior:"smooth", block:"start"}), 100);
+    });
+  });
+}
+
+function openWrongModal(){
+  renderWrongModalBody();
+  document.getElementById("wrongModalOverlay").classList.add("show");
+}
+function closeWrongModal(){
+  document.getElementById("wrongModalOverlay").classList.remove("show");
+}
+
+function exportWrongToPdf(){
+  const entries = Object.entries(getWrongAnswers());
+  if(entries.length === 0) return;
+
+  const body = document.getElementById("wrongModalBody");
+  const header = body.querySelector(".pdf-export-header");
+  const gotoBtns = body.querySelectorAll(".btn-goto");
+
+  const pdfBtn = document.getElementById("wrongPdfBtn");
+  const oldLabel = pdfBtn.textContent;
+  pdfBtn.disabled = true;
+  pdfBtn.textContent = "PDF 생성 중...";
+
+  if(header) header.classList.add("show-for-pdf");
+  gotoBtns.forEach(b => b.style.display = "none");
+
+  html2pdf()
+    .set({
+      margin: 10,
+      filename: `오답모음_${new Date().toISOString().slice(0,10)}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    })
+    .from(body)
+    .save()
+    .then(() => {
+      if(header) header.classList.remove("show-for-pdf");
+      gotoBtns.forEach(b => b.style.display = "");
+      pdfBtn.disabled = false;
+      pdfBtn.textContent = oldLabel;
+    });
+}
+
+function initWrongPanel(){
+  renderWrongPanelButton();
+  document.getElementById("wrongPanelBtn").addEventListener("click", openWrongModal);
+  document.getElementById("wrongModalClose").addEventListener("click", closeWrongModal);
+  document.getElementById("wrongPdfBtn").addEventListener("click", exportWrongToPdf);
+  document.getElementById("wrongModalOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "wrongModalOverlay") closeWrongModal();
+  });
+}
+
+function markChapterDone(id){
+  const chk = document.getElementById(`chk-${id}`);
+  if(chk){ chk.textContent = "●"; chk.classList.add("done"); }
+}
+
+function updateProgressBar(){
+  const progress = getProgress();
+  const total = CHAPTERS.length;
+  const done = Object.keys(progress).filter(k => progress[k]).length;
+  const pct = total === 0 ? 0 : Math.round((done/total)*100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressText").textContent = `${pct}% (${done}/${total})`;
+}
+
+function initScrollSpy(){
+  const links = document.querySelectorAll(".chapter-list a");
+  const sections = CHAPTERS.map(c => document.getElementById(c.id));
+  window.addEventListener("scroll", () => {
+    let current = sections[0];
+    sections.forEach(sec => {
+      if(sec.getBoundingClientRect().top <= 120) current = sec;
+    });
+    links.forEach(l => l.classList.toggle("active", l.dataset.id === current.id));
+  });
+}
+
+function initMenuToggle(){
+  document.getElementById("menuToggle").addEventListener("click", () => {
+    document.getElementById("sidebar").classList.toggle("open");
+  });
+}
+
+function initHeaderColabLink(){
+  document.getElementById("colabBtnHeader").href = CHAPTERS[0].notebookUrl;
+}
+
+buildSidebar();
+buildMain();
+initCodeMirrors();
+initRevealButtons();
+initCopyButtons();
+initQuizzes();
+initWrongPanel();
+updateProgressBar();
+initScrollSpy();
+initMenuToggle();
+initHeaderColabLink();
+Prism.highlightAll();
+</script>
+</body>
+</html>
