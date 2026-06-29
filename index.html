@@ -1919,6 +1919,361 @@ print(df)`
       options: ["열.apply(함수)", "열.replace(함수)", "열.astype(함수)", "열.map(조건)"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w2-3-1",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "3차시-1. 데이터 분할(holdout)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%201.%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%ED%95%A0%28holdout%20%EA%B3%B5%EB%B6%80%EC%9A%A9%20_%EC%8B%9C%ED%97%98%EC%9A%A9%20for%20new%2C%2C%20%EC%9B%90%EB%A6%AC%20%EC%A0%81%EC%9A%A9%EB%A0%A5%29%20.ipynb",
+    title: "31. 홀드아웃: train_test_split으로 데이터 나누기",
+    concept: `
+      <p>머신러닝 모델을 만들 때는 전체 데이터를 <b>훈련(train)</b>용과 <b>평가(test)</b>용으로 나눠야 합니다(홀드아웃).
+      <code>sklearn.model_selection</code>의 <code>train_test_split(X, Y, test_size=비율, random_state=숫자)</code>를 사용하며,
+      반환 순서는 항상 <code>x_train, x_test, y_train, y_test</code>입니다. <code>random_state</code>를 고정하면
+      매번 같은 방식으로 데이터가 나뉘어 결과를 재현할 수 있습니다.</p>`,
+    example: `import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_wine
+
+data = load_wine()
+X = pd.DataFrame(data.data, columns=data.feature_names)
+Y = pd.DataFrame(data.target, columns=['target'])
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+print(f'train 개수 {len(x_train)}, test 개수 {len(x_test)}')`,
+    practice: {
+      starter: `import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+
+data = load_iris()
+X = pd.DataFrame(data.data, columns=data.feature_names)
+Y = pd.DataFrame(data.target, columns=['species'])
+
+# (1) X, Y를 train_test_split으로 나누세요 (test_size=0.3, random_state=2026)
+x_train, x_test, y_train, y_test = ___
+
+print(f'train 개수: {len(x_train)}, test 개수: {len(x_test)}')`,
+      hint: `1) train_test_split(X, Y, test_size=0.3, random_state=2026)`,
+      answer: `import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+
+data = load_iris()
+X = pd.DataFrame(data.data, columns=data.feature_names)
+Y = pd.DataFrame(data.target, columns=['species'])
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=2026)
+
+print(f'train 개수: {len(x_train)}, test 개수: {len(x_test)}')`
+    },
+    quiz: {
+      type: "mc",
+      question: `train_test_split(X, Y, test_size=0.2, random_state=42)의 반환값 순서는?`,
+      options: ["x_train, x_test, y_train, y_test", "x_train, y_train, x_test, y_test", "y_train, y_test, x_train, x_test", "X, Y, x_train, y_train"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-3-2",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "3차시-1. 데이터 분할(holdout)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%201.%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%ED%95%A0%28holdout%20%EA%B3%B5%EB%B6%80%EC%9A%A9%20_%EC%8B%9C%ED%97%98%EC%9A%A9%20for%20new%2C%2C%20%EC%9B%90%EB%A6%AC%20%EC%A0%81%EC%9A%A9%EB%A0%A5%29%20.ipynb",
+    title: "32. 분류 모델 학습 흐름: fit, predict, accuracy_score",
+    concept: `
+      <p>사이킷런의 거의 모든 분류 모델은 같은 4단계 흐름을 따릅니다: <b>① 객체 생성</b>(예: <code>GaussianNB()</code>),
+      <b>② 훈련</b>(<code>모델.fit(x_train, y_train)</code> — 문제와 정답으로 학습), <b>③ 예측</b>(<code>모델.predict(x_test)</code> —
+      정답 없이 문제만 줘서 예측), <b>④ 평가</b>(<code>accuracy_score(y_test, 예측값)</code> — 정답과 예측을 비교).</p>`,
+    example: `from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+
+nb = GaussianNB()
+nb.fit(x_train, y_train)
+nb_predict = nb.predict(x_test)
+print(accuracy_score(y_test, nb_predict))`,
+    practice: {
+      starter: `from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# (1) 의사결정나무 모델 객체를 생성하세요
+dt = ___
+
+# (2) x_train, y_train으로 훈련시키세요
+___
+
+# (3) x_test로 예측하세요
+dt_predict = ___
+
+# (4) 정확도를 계산하세요
+score = ___
+print(score)`,
+      hint: `1) DecisionTreeClassifier()
+2) dt.fit(x_train, y_train)
+3) dt.predict(x_test)
+4) accuracy_score(y_test, dt_predict)`,
+      answer: `from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+dt = DecisionTreeClassifier()
+
+dt.fit(x_train, y_train)
+
+dt_predict = dt.predict(x_test)
+
+score = accuracy_score(y_test, dt_predict)
+print(score)`
+    },
+    quiz: {
+      type: "mc",
+      question: `사이킷런 모델에서 정답을 보지 않고 새로운 값을 예측할 때 사용하는 메서드는?`,
+      options: ["predict()", "fit()", "score()", "transform()"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-3-3",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "3차시-1. 데이터 분할(holdout)",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%203%EC%B0%A8%EC%8B%9C%201.%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%ED%95%A0%28holdout%20%EA%B3%B5%EB%B6%80%EC%9A%A9%20_%EC%8B%9C%ED%97%98%EC%9A%A9%20for%20new%2C%2C%20%EC%9B%90%EB%A6%AC%20%EC%A0%81%EC%9A%A9%EB%A0%A5%29%20.ipynb",
+    title: "33. KFold 교차검증과 cross_val_score",
+    concept: `
+      <p>홀드아웃은 한 번만 나누기 때문에 운에 따라 결과가 달라질 수 있습니다. <b>K-Fold 교차검증</b>은 데이터를 K개 조각(fold)으로
+      나눠 K번 훈련/평가를 반복하고 평균 성능을 봅니다. <code>StratifiedKFold(n_splits=K, shuffle=True)</code>는 각 fold에 클래스 비율을
+      원본과 비슷하게 유지하며 나눕니다. <code>cross_val_score(estimator=모델, X=, y=, cv=폴드객체)</code>로 한 번에 K번의 훈련/평가를
+      수행하고 각 fold의 점수를 배열로 받습니다.</p>`,
+    example: `from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.svm import SVC
+
+skf = StratifiedKFold(n_splits=4, shuffle=True)
+svc = SVC()
+svc_result = cross_val_score(estimator=svc, X=X, y=Y, cv=skf)
+print(f'정확도: {svc_result.mean():.2f}')`,
+    practice: {
+      starter: `from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.linear_model import LogisticRegression
+
+# (1) 10개의 fold로 나누는 StratifiedKFold 객체를 만드세요 (shuffle=True)
+skf = ___
+
+# (2) 로지스틱 회귀 모델 객체를 생성하세요
+lr = ___
+
+# (3) cross_val_score로 교차검증 점수를 구하세요
+lr_result = ___
+
+print(f'평균 정확도: {lr_result.mean():.2f}')`,
+      hint: `1) StratifiedKFold(n_splits=10, shuffle=True)
+2) LogisticRegression()
+3) cross_val_score(estimator=lr, X=X, y=Y, cv=skf)`,
+      answer: `from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.linear_model import LogisticRegression
+
+skf = StratifiedKFold(n_splits=10, shuffle=True)
+
+lr = LogisticRegression()
+
+lr_result = cross_val_score(estimator=lr, X=X, y=Y, cv=skf)
+
+print(f'평균 정확도: {lr_result.mean():.2f}')`
+    },
+    quiz: {
+      type: "mc",
+      question: `K-Fold 교차검증을 사용할 때, 한 번의 홀드아웃보다 좋은 점은 무엇인가요?`,
+      options: ["여러 번 나눠 평가해 평균 성능을 보므로 결과가 더 안정적이다", "훈련 속도가 항상 더 빠르다", "메모리를 적게 사용한다", "정확도가 항상 100%가 된다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-3-4",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "3차시-2. 분류 알고리즘",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-3%EC%B0%A8%EC%8B%9C%202.%20%EB%B6%84%EB%A5%98%20%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98%20.ipynb",
+    title: "34. 분류 알고리즘 비교: KNN, 의사결정나무, 랜덤포레스트",
+    concept: `
+      <p><b>KNN</b>(<code>KNeighborsClassifier(n_neighbors=K)</code>)은 가장 가까운 K개의 이웃이 어떤 클래스인지를 보고
+      "유유상종"으로 분류합니다. <b>의사결정나무</b>(<code>DecisionTreeClassifier()</code>)는 조건을 따라가며 분류하지만
+      훈련 데이터에 과적합되기 쉽습니다. <b>랜덤포레스트</b>(<code>RandomForestClassifier(n_estimators=, criterion=)</code>)는
+      여러 개의 의사결정나무를 앙상블(조합)하여 더 안정적인 성능을 냅니다.</p>`,
+    example: `from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X, Y)
+print(accuracy_score(Y, knn.predict(X)))
+
+rf = RandomForestClassifier(n_estimators=50, criterion='entropy')
+rf.fit(X, Y)
+print(accuracy_score(Y, rf.predict(X)))`,
+    practice: {
+      starter: `from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# (1) 이웃 수가 5인 KNN 분류기를 만들고 X, Y로 훈련하세요
+knn = ___
+knn.fit(X, Y)
+
+# (2) 의사결정나무 분류기를 만들고 X, Y로 훈련하세요
+dt = ___
+dt.fit(X, Y)
+
+# (3) 두 모델의 정확도를 각각 구하세요
+knn_score = ___
+dt_score = ___
+
+print(knn_score, dt_score)`,
+      hint: `1) KNeighborsClassifier(n_neighbors=5)
+2) DecisionTreeClassifier()
+3) accuracy_score(Y, knn.predict(X)), accuracy_score(Y, dt.predict(X))`,
+      answer: `from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X, Y)
+
+dt = DecisionTreeClassifier()
+dt.fit(X, Y)
+
+knn_score = accuracy_score(Y, knn.predict(X))
+dt_score = accuracy_score(Y, dt.predict(X))
+
+print(knn_score, dt_score)`
+    },
+    quiz: {
+      type: "mc",
+      question: `여러 개의 의사결정나무를 조합해 더 안정적인 성능을 내는 앙상블 분류 알고리즘은?`,
+      options: ["랜덤포레스트", "KNN", "나이브베이즈", "SVM"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-3-5",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "3차시-3. 회귀 알고리즘",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-3%EC%B0%A8%EC%8B%9C%203.%20%ED%9A%8C%EA%B7%80%20%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98.ipynb",
+    title: "35. 회귀 모델 평가지표: MAE, MSE, R²",
+    concept: `
+      <p>분류는 정확도(accuracy)로 평가하지만, 회귀는 수치 예측이라 다른 지표를 씁니다.
+      <code>mean_absolute_error</code>(MAE)는 오차의 절댓값 평균(직관적), <code>mean_squared_error</code>(MSE)는
+      오차를 제곱해 큰 오차에 더 큰 패널티를 줍니다. <code>r2_score</code>(R²)는 모델이 데이터를 얼마나 잘 설명하는지를
+      0~1 사이 값으로 나타내며 1에 가까울수록 좋습니다.</p>`,
+    example: `from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+reg = LinearRegression().fit(x_train, y_train)
+predict = reg.predict(x_test)
+
+print(mean_absolute_error(y_test, predict))
+print(mean_squared_error(y_test, predict))
+print(r2_score(y_test, predict))`,
+    practice: {
+      starter: `from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+# (1) Ridge 회귀 모델을 만들고 x_train, y_train으로 훈련하세요
+rid = ___
+
+# (2) x_test로 예측하세요
+rpredict = ___
+
+# (3) MAE, MSE, R²를 각각 구하세요
+mae = ___
+mse = ___
+r2 = ___
+
+print(mae, mse, r2)`,
+      hint: `1) Ridge().fit(x_train, y_train)
+2) rid.predict(x_test)
+3) mean_absolute_error(y_test, rpredict), mean_squared_error(y_test, rpredict), r2_score(y_test, rpredict)`,
+      answer: `from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+rid = Ridge().fit(x_train, y_train)
+
+rpredict = rid.predict(x_test)
+
+mae = mean_absolute_error(y_test, rpredict)
+mse = mean_squared_error(y_test, rpredict)
+r2 = r2_score(y_test, rpredict)
+
+print(mae, mse, r2)`
+    },
+    quiz: {
+      type: "mc",
+      question: `회귀 모델이 데이터를 얼마나 잘 설명하는지 0~1 사이 값으로 나타내는 지표는?`,
+      options: ["R²(r2_score)", "MAE", "MSE", "accuracy_score"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-3-6",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "3차시-3. 회귀 알고리즘",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-3%EC%B0%A8%EC%8B%9C%203.%20%ED%9A%8C%EA%B7%80%20%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98.ipynb",
+    title: "36. 여러 회귀 알고리즘 한 번에 비교하기",
+    concept: `
+      <p>여러 모델을 하나씩 따로 코드를 쓰는 대신, 모델 객체들을 <b>리스트</b>에 담아 <code>for</code>문으로 반복하면
+      적은 코드로 여러 알고리즘의 성능을 한눈에 비교할 수 있습니다. 각 모델마다 <code>fit → predict → 평가</code>를 반복하고
+      결과를 리스트에 모아 마지막에 비교(예: 막대그래프)합니다.</p>`,
+    example: `from sklearn.linear_model import Ridge, Lasso
+from sklearn.svm import SVR
+from sklearn.metrics import r2_score
+
+regressors = [Ridge(), Lasso(), SVR()]
+model_r2 = []
+
+for model in regressors:
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    model_r2.append(r2_score(y_test, y_pred))
+
+print(model_r2)`,
+    practice: {
+      starter: `from sklearn.linear_model import Ridge, Lasso, ElasticNet
+from sklearn.metrics import r2_score
+
+regressors = [Ridge(), Lasso(), ElasticNet()]
+model_r2 = []
+
+# (1) for문으로 각 모델을 x_train, y_train으로 훈련시키세요
+for model in regressors:
+    ___
+
+    # (2) x_test로 예측하세요
+    y_pred = ___
+
+    # (3) r2 점수를 구해 model_r2 리스트에 추가하세요
+    score = ___
+    model_r2.append(score)
+
+print(model_r2)`,
+      hint: `1) model.fit(x_train, y_train)
+2) model.predict(x_test)
+3) r2_score(y_test, y_pred)`,
+      answer: `from sklearn.linear_model import Ridge, Lasso, ElasticNet
+from sklearn.metrics import r2_score
+
+regressors = [Ridge(), Lasso(), ElasticNet()]
+model_r2 = []
+
+for model in regressors:
+    model.fit(x_train, y_train)
+
+    y_pred = model.predict(x_test)
+
+    score = r2_score(y_test, y_pred)
+    model_r2.append(score)
+
+print(model_r2)`
+    },
+    quiz: {
+      type: "mc",
+      question: `여러 모델을 리스트에 담아 for문으로 반복하며 학습·평가하는 방식의 장점은?`,
+      options: ["적은 코드로 여러 알고리즘 성능을 한눈에 비교할 수 있다", "모델 정확도가 자동으로 올라간다", "데이터 전처리가 필요 없어진다", "훈련 데이터가 자동으로 늘어난다"],
+      correctIndex: 0
+    }
   }
 ];
 
