@@ -1665,6 +1665,260 @@ plt.show()`
       options: ["군집화(비지도학습)", "분류(지도학습)", "회귀(지도학습)", "강화학습"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w2-2-1",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "2차시. EDA 복습 및 머신러닝",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20EDA%20%EB%B3%B5%EC%8A%B5%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D%28%EC%96%98%20%EC%A2%80%20%EB%B4%90%EC%A4%98%21%21%21%21%21%21%21%21%29.ipynb",
+    title: "26. unique, nunique, value_counts로 데이터 탐색",
+    concept: `
+      <p>EDA(탐색적 데이터 분석)에서 특정 열에 어떤 값들이 있는지 파악할 때 자주 쓰는 세 가지 메서드가 있습니다.
+      <code>열.unique()</code>는 중복을 제거한 값 목록을, <code>열.nunique()</code>는 그 개수를,
+      <code>열.value_counts()</code>는 각 값이 몇 번씩 등장하는지를 많은 순서대로 보여줍니다.</p>`,
+    example: `import pandas as pd
+
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+print(df['continent'].unique())
+print(df['continent'].nunique())
+print(df['continent'].value_counts())`,
+    practice: {
+      starter: `import pandas as pd
+
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+# (1) country열의 중복 없는 값 목록을 result1에 저장하세요
+result1 = ___
+
+# (2) country열의 중복 없는 값 개수를 result2에 저장하세요
+result2 = ___
+
+# (3) continent열의 각 값이 몇 번 등장하는지를 result3에 저장하세요
+result3 = ___
+
+print(result1)
+print(result2)
+print(result3)`,
+      hint: `1) df['country'].unique()
+2) df['country'].nunique()
+3) df['continent'].value_counts()`,
+      answer: `import pandas as pd
+
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+result1 = df['country'].unique()
+result2 = df['country'].nunique()
+result3 = df['continent'].value_counts()
+
+print(result1)
+print(result2)
+print(result3)`
+    },
+    quiz: {
+      type: "mc",
+      question: `특정 열의 값들이 각각 몇 번씩 등장하는지 많은 순서로 보고 싶을 때 사용하는 메서드는?`,
+      options: ["value_counts()", "unique()", "nunique()", "count()"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-2-2",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "2차시. EDA 복습 및 머신러닝",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20EDA%20%EB%B3%B5%EC%8A%B5%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D%28%EC%96%98%20%EC%A2%80%20%EB%B4%90%EC%A4%98%21%21%21%21%21%21%21%21%29.ipynb",
+    title: "27. 두 열을 합쳐 파생변수 만들기",
+    concept: `
+      <p><b>파생변수</b>는 기존 열들을 가공해 새로 만든 의미 있는 열입니다. 두 문자열 열은 <code>+</code> 연산자로 바로
+      이어붙일 수 있습니다(예: <code>df['continent'] + df['country']</code>). 구분자를 넣고 싶다면
+      <code>df['continent'] + '_' + df['country']</code>처럼 문자열을 중간에 추가합니다. 결과는 새로운 열에 저장합니다.</p>`,
+    example: `import pandas as pd
+
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+df['source'] = df['continent'] + '_' + df['country']
+print(df['source'].head())`,
+    practice: {
+      starter: `import pandas as pd
+
+df = pd.DataFrame({'first': ['Kim', 'Lee', 'Park'], 'last': ['Min', 'Su', 'Ji']})
+
+# (1) first와 last 열을 '_'로 이어붙여 새로운 열 'full'을 만드세요
+df['full'] = ___
+
+print(df)`,
+      hint: `1) df['first'] + '_' + df['last']`,
+      answer: `import pandas as pd
+
+df = pd.DataFrame({'first': ['Kim', 'Lee', 'Park'], 'last': ['Min', 'Su', 'Ji']})
+
+df['full'] = df['first'] + '_' + df['last']
+
+print(df)`
+    },
+    quiz: {
+      type: "mc",
+      question: `두 문자열 열을 구분자 '_'로 이어붙여 새 열을 만드는 코드로 올바른 것은?`,
+      options: ["df['a'] + '_' + df['b']", "df['a'].concat(df['b'])", "df['a'] & df['b']", "df.merge('a','b')"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-2-3",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "2차시. EDA 복습 및 머신러닝",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20EDA%20%EB%B3%B5%EC%8A%B5%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D%28%EC%96%98%20%EC%A2%80%20%EB%B4%90%EC%A4%98%21%21%21%21%21%21%21%21%29.ipynb",
+    title: "28. astype으로 데이터 타입 변환하기",
+    concept: `
+      <p><code>열.astype(타입)</code>은 열 전체의 데이터 타입을 한 번에 바꿔줍니다(예: 실수 → 정수는 <code>astype(int)</code>).
+      비슷한 효과를 함수 + <code>apply()</code>로도 만들 수 있지만, 단순 타입 변환에는 <code>astype</code>이 더 간결하고 빠릅니다.
+      문자열을 덧붙이는 가공(예: <code>1952</code> → <code>"1952년"</code>)에는 <code>apply(함수)</code>를 사용합니다.</p>`,
+    example: `import pandas as pd
+
+df = pd.read_csv('gapminder.tsv', sep='\\t')
+
+df['lifeExp'] = df['lifeExp'].astype(int)
+df['year'] = df['year'].apply(lambda y: f'{y}년')
+print(df.head())`,
+    practice: {
+      starter: `import pandas as pd
+
+df = pd.DataFrame({'price': [1000.5, 2000.7, 3000.9]})
+
+# (1) price열을 정수형으로 변환하세요
+df['price'] = ___
+
+# (2) price열의 각 값 뒤에 '원'을 붙인 새 열 'price_str'을 만드세요 (apply와 함수 사용)
+def add_won(p):
+    return ___
+
+df['price_str'] = df['price'].apply(add_won)
+
+print(df)`,
+      hint: `1) df['price'].astype(int)
+2) f'{p}원' 반환`,
+      answer: `import pandas as pd
+
+df = pd.DataFrame({'price': [1000.5, 2000.7, 3000.9]})
+
+df['price'] = df['price'].astype(int)
+
+def add_won(p):
+    return f'{p}원'
+
+df['price_str'] = df['price'].apply(add_won)
+
+print(df)`
+    },
+    quiz: {
+      type: "mc",
+      question: `열 전체의 데이터 타입을 정수형으로 한 번에 바꿀 때 사용하는 메서드는?`,
+      options: ["astype(int)", "apply(int)", "to_int()", "convert(int)"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-2-4",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "2차시. EDA 복습 및 머신러닝",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20EDA%20%EB%B3%B5%EC%8A%B5%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D%28%EC%96%98%20%EC%A2%80%20%EB%B4%90%EC%A4%98%21%21%21%21%21%21%21%21%29.ipynb",
+    title: "29. 벡터 연산으로 비율 파생변수 만들기",
+    concept: `
+      <p>pandas의 열(Series)은 <code>for</code>문 없이도 <code>열1 / 열2</code>처럼 통째로 나누기 연산이 가능합니다.
+      이를 <b>벡터 연산</b>이라고 하며, 한 행씩 반복문으로 계산하는 것보다 훨씬 빠르고 코드도 간결합니다.
+      예를 들어 팁 비율을 구할 때 <code>tips['tip'] / tips['total_bill']</code> 한 줄로 전체 행에 대한 비율이 계산됩니다.</p>`,
+    example: `import pandas as pd
+
+tips = pd.DataFrame({'tip': [2, 3, 4], 'total_bill': [20, 25, 16]})
+
+tips['ratio'] = tips['tip'] / tips['total_bill']
+print(tips)`,
+    practice: {
+      starter: `import pandas as pd
+
+df = pd.DataFrame({'score': [80, 90, 70], 'max_score': [100, 100, 100]})
+
+# (1) for문 없이 벡터 연산으로 score/max_score 비율을 구해 'ratio'열에 저장하세요
+df['ratio'] = ___
+
+print(df)`,
+      hint: `1) df['score'] / df['max_score']`,
+      answer: `import pandas as pd
+
+df = pd.DataFrame({'score': [80, 90, 70], 'max_score': [100, 100, 100]})
+
+df['ratio'] = df['score'] / df['max_score']
+
+print(df)`
+    },
+    quiz: {
+      type: "mc",
+      question: `pandas 열끼리 for문 없이 한 번에 나누기 연산을 수행하는 방식을 무엇이라 부르나요?`,
+      options: ["벡터 연산", "반복 연산", "함수 연산", "재귀 연산"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w2-2-5",
+    week: "2주차 - 데이터 분석 및 머신러닝",
+    notebookTitle: "2차시. EDA 복습 및 머신러닝",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/2%EC%A3%BC%EC%B0%A8%20-%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EB%B6%84%EC%84%9D%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D/%EC%83%88%EC%8B%B9%202%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20EDA%20%EB%B3%B5%EC%8A%B5%20%EB%B0%8F%20%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D%28%EC%96%98%20%EC%A2%80%20%EB%B4%90%EC%A4%98%21%21%21%21%21%21%21%21%29.ipynb",
+    title: "30. apply()로 조건부 범주화하기",
+    concept: `
+      <p>숫자 값을 조건에 따라 다른 범주(문자열)로 바꾸고 싶을 때는, 조건문이 담긴 함수를 만들고
+      <code>열.apply(함수)</code>로 전체 행에 적용합니다. 예를 들어 인원수(<code>size</code>)가 4 이상이면
+      '단체손님', 그렇지 않으면 '-'를 반환하는 함수를 만들어 <code>tips['size'].apply(customer_type)</code>로
+      새로운 분류 열을 만들 수 있습니다.</p>`,
+    example: `import pandas as pd
+
+tips = pd.DataFrame({'size': [2, 4, 5, 1]})
+
+def customer_type(x):
+    if x >= 4:
+        return '단체손님'
+    else:
+        return '-'
+
+tips['type'] = tips['size'].apply(customer_type)
+print(tips)`,
+    practice: {
+      starter: `import pandas as pd
+
+df = pd.DataFrame({'age': [15, 25, 65, 40, 10]})
+
+# (1) age가 19 이상이면 '성인', 미만이면 '미성년자'를 반환하는 함수를 만드세요
+def classify(age):
+    if ___:
+        return '성인'
+    else:
+        return '미성년자'
+
+# (2) age열에 함수를 적용해 'category'열을 만드세요
+df['category'] = ___
+
+print(df)`,
+      hint: `1) age >= 19
+2) df['age'].apply(classify)`,
+      answer: `import pandas as pd
+
+df = pd.DataFrame({'age': [15, 25, 65, 40, 10]})
+
+def classify(age):
+    if age >= 19:
+        return '성인'
+    else:
+        return '미성년자'
+
+df['category'] = df['age'].apply(classify)
+
+print(df)`
+    },
+    quiz: {
+      type: "mc",
+      question: `조건에 따라 다른 문자열 범주를 반환하도록 만든 함수를 열 전체에 적용하려면?`,
+      options: ["열.apply(함수)", "열.replace(함수)", "열.astype(함수)", "열.map(조건)"],
+      correctIndex: 0
+    }
   }
 ];
 
