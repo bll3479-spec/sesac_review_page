@@ -515,6 +515,278 @@ else:
       options: ["O", "X"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w1-2-1",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "2차시. 함수와 클래스",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20%ED%95%A8%EC%88%98%EC%99%80%20%ED%81%B4%EB%9E%98%EC%8A%A4%20%28%ED%95%A8%EC%88%98%EB%8A%94%20%EB%B9%84%EC%BD%94%20%EC%B0%B8%EA%B3%A0%29.ipynb",
+    title: "6. 함수 기초",
+    concept: `
+      <p>함수는 <code>def 함수명(매개변수):</code> 형태로 정의하며, 여러 줄의 코드를 하나의 이름으로 묶어 재사용할 수 있습니다.
+      함수 안에서 처리한 결과를 호출한 곳으로 돌려주려면 <b><code>return</code></b>을 사용합니다. <code>return</code>이 없으면
+      함수는 결과를 돌려주지 않고(=<code>None</code>) 내부에서 <code>print</code>한 내용만 화면에 보입니다.</p>`,
+    example: `def greet(name, msg="안녕"):
+    return f"{msg}, {name}!"
+
+print(greet("새싹"))
+print(greet("새싹", "반가워"))`,
+    practice: {
+      starter: `scores = [10, 20, 20, 15, 22, 18, 7, 9]
+
+# (1) 점수 리스트와 기준점(cut)을 받아, cut 이상인 점수만 모은 리스트를 반환하는
+#     함수 count_pass를 작성하세요.
+def count_pass(scores, cut):
+    result = []
+    for s in scores:
+        if ___:
+            result.append(s)
+    return ___
+
+# (2) cut=10으로 호출해 result에 저장하고 출력하세요
+result = ___
+print(result)`,
+      hint: `1) 비교 연산자 >=를 사용해 s가 cut 이상인지 검사합니다.
+2) for문이 끝난 뒤 result를 return해야 호출한 곳에서 그 값을 받을 수 있습니다.
+3) 함수 호출은 count_pass(scores, 10) 형태입니다.`,
+      answer: `scores = [10, 20, 20, 15, 22, 18, 7, 9]
+
+def count_pass(scores, cut):
+    result = []
+    for s in scores:
+        if s >= cut:
+            result.append(s)
+    return result
+
+result = count_pass(scores, 10)
+print(result)`
+    },
+    quiz: {
+      type: "mc",
+      question: `함수 안에서 처리한 결과를 호출한 곳으로 돌려줄 때 사용하는 키워드는?`,
+      options: ["print", "def", "return", "pass"],
+      correctIndex: 2
+    }
+  },
+  {
+    id: "w1-2-2",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "2차시. 함수와 클래스",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20%ED%95%A8%EC%88%98%EC%99%80%20%ED%81%B4%EB%9E%98%EC%8A%A4%20%28%ED%95%A8%EC%88%98%EB%8A%94%20%EB%B9%84%EC%BD%94%20%EC%B0%B8%EA%B3%A0%29.ipynb",
+    title: "7. 리스트 컴프리헨션",
+    concept: `
+      <p><b>리스트 컴프리헨션</b>은 <code>for</code>문 + <code>if</code> 조건을 한 줄로 압축해 새 리스트를 만드는 문법입니다.
+      <code>[표현식 for 변수 in 시퀀스 if 조건]</code> 형태로, 조건은 값을 거를 때, 표현식은 값을 변형할 때 사용합니다.</p>`,
+    example: `nums = [1,2,3,4,5,6,7,8,9,10]
+evens = [n for n in nums if n % 2 == 0]
+print(evens)
+
+squares = [n**2 for n in nums]
+print(squares)`,
+    practice: {
+      starter: `scores = [10, 20, 20, 15, 22, 18, 7, 9, 30, 5]
+
+# (1) 리스트 컴프리헨션으로 10점 미만인 값만 모아 low에 저장하세요
+low = ___
+
+# (2) 리스트 컴프리헨션으로 각 점수에 5점을 더한 값을 adjusted에 저장하세요
+adjusted = ___
+
+print(low)
+print(adjusted)`,
+      hint: `1) 조건으로 거를 때는 [x for x in scores if x < 10] 형태를 사용합니다.
+2) 값을 변형할 때는 표현식 부분만 바꿉니다: [x + 5 for x in scores]`,
+      answer: `scores = [10, 20, 20, 15, 22, 18, 7, 9, 30, 5]
+
+low = [x for x in scores if x < 10]
+adjusted = [x + 5 for x in scores]
+
+print(low)
+print(adjusted)`
+    },
+    quiz: {
+      type: "mc",
+      question: `리스트 컴프리헨션의 올바른 문법 형태는?`,
+      options: [
+        "[for x in lst: x]",
+        "[x for x in lst if 조건]",
+        "for x in lst: [x]",
+        "list(x for lst)"
+      ],
+      correctIndex: 1
+    }
+  },
+  {
+    id: "w1-2-3",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "2차시. 함수와 클래스",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20%ED%95%A8%EC%88%98%EC%99%80%20%ED%81%B4%EB%9E%98%EC%8A%A4%20%28%ED%95%A8%EC%88%98%EB%8A%94%20%EB%B9%84%EC%BD%94%20%EC%B0%B8%EA%B3%A0%29.ipynb",
+    title: "8. 집합 연산과 멤버 연산자",
+    concept: `
+      <p>리스트를 <code>set()</code>으로 바꾸면 중복이 제거되고, 집합 간 관계를 구할 수 있습니다:
+      <b>교집합 <code>&amp;</code></b>(공통 원소), <b>합집합 <code>|</code></b>(전체 원소), <b>차집합 <code>-</code></b>(한쪽에만 있는 원소).
+      <code>in</code>/<code>not in</code>은 어떤 값이 시퀀스(리스트, 셋 등)에 포함되어 있는지 검사하는 멤버 연산자입니다.</p>`,
+    example: `team_a = ['Alice', 'Bob', 'Charlie', 'David']
+team_b = ['Charlie', 'Eve', 'Frank', 'Alice']
+
+print(set(team_a) & set(team_b))   # 교집합
+print(set(team_a) | set(team_b))   # 합집합
+print(set(team_a) - set(team_b))   # 차집합
+print('Bob' in team_a)             # 멤버 연산자`,
+    practice: {
+      starter: `club_a = ['Mina', 'Jun', 'Sora', 'Hyun']
+club_b = ['Sora', 'Yuna', 'Jun', 'Bin']
+
+# (1) 두 동아리 모두 가입한 사람(교집합)을 found에 저장하세요
+found = ___
+
+# (2) club_a에만 가입한 사람(차집합)을 only_a에 저장하세요
+only_a = ___
+
+print(found)
+print(only_a)`,
+      hint: `1) 리스트를 set()으로 바꾼 뒤 &로 교집합을 구합니다: set(club_a) & set(club_b)
+2) 차집합은 - 연산자입니다: set(club_a) - set(club_b)`,
+      answer: `club_a = ['Mina', 'Jun', 'Sora', 'Hyun']
+club_b = ['Sora', 'Yuna', 'Jun', 'Bin']
+
+found = set(club_a) & set(club_b)
+only_a = set(club_a) - set(club_b)
+
+print(found)
+print(only_a)`
+    },
+    quiz: {
+      type: "mc",
+      question: `두 집합의 공통 원소만 구하는 연산자는?`,
+      options: ["&", "|", "-", "in"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-2-4",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "2차시. 함수와 클래스",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20%ED%95%A8%EC%88%98%EC%99%80%20%ED%81%B4%EB%9E%98%EC%8A%A4%20%28%ED%95%A8%EC%88%98%EB%8A%94%20%EB%B9%84%EC%BD%94%20%EC%B0%B8%EA%B3%A0%29.ipynb",
+    title: "9. 클래스와 객체",
+    concept: `
+      <p><b>클래스</b>는 데이터(속성)와 동작(메서드)을 하나로 묶는 틀(붕어빵 틀)입니다. <code>__init__</code>은 객체가
+      만들어질 때 자동으로 실행되는 <b>생성자</b>로, 인스턴스 속성을 초기화합니다. 모든 인스턴스 메서드의 첫 번째 매개변수는
+      자기 자신을 가리키는 <code>self</code>입니다.</p>`,
+    example: `class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    def intro(self):
+        print(f"저는 {self.name}, {self.age}살입니다.")
+
+p1 = Person("새싹", 25)
+p1.intro()`,
+    practice: {
+      starter: `# (1) Drink 클래스를 정의하세요. __init__(self, name, price)에서
+#     name, price를 인스턴스 속성으로 저장합니다.
+class Drink:
+    def __init__(self, name, price):
+        ___
+
+    # (2) info() 메서드를 추가해 "이름 - price원" 형식으로 출력하세요
+    def info(self):
+        ___
+
+d1 = Drink("아메리카노", 4000)
+d1.info()`,
+      hint: `1) __init__ 안에서 self.name = name, self.price = price처럼 저장합니다.
+2) info()에서는 f"{self.name} - {self.price}원" 형태로 print 합니다.`,
+      answer: `class Drink:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+    def info(self):
+        print(f'{self.name} - {self.price}원')
+
+d1 = Drink("아메리카노", 4000)
+d1.info()`
+    },
+    quiz: {
+      type: "mc",
+      question: `클래스의 인스턴스 메서드를 정의할 때 첫 번째 매개변수로 항상 작성하는 것은?`,
+      options: ["self", "this", "init", "class"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w1-2-5",
+    week: "1주차 - 기초 파이썬",
+    notebookTitle: "2차시. 함수와 클래스",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/1%EC%A3%BC%EC%B0%A8%20-%20%EA%B8%B0%EC%B4%88%20%ED%8C%8C%EC%9D%B4%EC%8D%AC/%EC%83%88%EC%8B%B9%201%EC%A3%BC%EC%B0%A8%20-%202%EC%B0%A8%EC%8B%9C%20%ED%95%A8%EC%88%98%EC%99%80%20%ED%81%B4%EB%9E%98%EC%8A%A4%20%28%ED%95%A8%EC%88%98%EB%8A%94%20%EB%B9%84%EC%BD%94%20%EC%B0%B8%EA%B3%A0%29.ipynb",
+    title: "10. 클래스 상속",
+    concept: `
+      <p><b>상속</b>은 기존 클래스(부모)의 속성과 메서드를 새 클래스(자식)가 그대로 물려받아 재사용하는 기능입니다.
+      <code>class 자식(부모):</code>로 선언하고, 자식의 <code>__init__</code>에서 <code>super().__init__()</code>을
+      호출하면 부모의 생성자를 실행해 공통 속성을 초기화할 수 있습니다. 자식에서 같은 이름의 메서드를 다시 정의하면
+      <b>오버라이드(재정의)</b>가 됩니다.</p>`,
+    example: `class Animal:
+    def __init__(self, name):
+        self.name = name
+    def speak(self):
+        print(f"{self.name}이 소리를 냅니다.")
+
+class Dog(Animal):
+    def speak(self):
+        print(f"{self.name}이 멍멍 짖습니다.")
+
+d = Dog("초코")
+d.speak()`,
+    practice: {
+      starter: `class Drink:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+    def info(self):
+        print(f'{self.name} - {self.price}원')
+
+# (1) Drink를 상속하는 ColdDrink 클래스를 만드세요.
+#     __init__(self, name, price, ice)에서 super().__init__()으로 부모를 초기화하고
+#     ice를 인스턴스 속성으로 저장합니다.
+class ColdDrink(___):
+    def __init__(self, name, price, ice):
+        ___
+        self.ice = ice
+
+    # (2) info()를 오버라이드해 "이름 - price원 (얼음 ice개)" 형식으로 출력하세요
+    def info(self):
+        ___
+
+d2 = ColdDrink("아이스티", 4500, 3)
+d2.info()`,
+      hint: `1) 상속은 class ColdDrink(Drink): 형태로 선언합니다.
+2) 부모 생성자 호출은 super().__init__(name, price)입니다.
+3) 오버라이드한 info()에서는 self.ice까지 포함해 f-string으로 출력합니다.`,
+      answer: `class Drink:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+    def info(self):
+        print(f'{self.name} - {self.price}원')
+
+class ColdDrink(Drink):
+    def __init__(self, name, price, ice):
+        super().__init__(name, price)
+        self.ice = ice
+
+    def info(self):
+        print(f'{self.name} - {self.price}원 (얼음 {self.ice}개)')
+
+d2 = ColdDrink("아이스티", 4500, 3)
+d2.info()`
+    },
+    quiz: {
+      type: "mc",
+      question: `자식 클래스에서 부모 클래스의 생성자를 호출할 때 사용하는 것은?`,
+      options: ["self.__init__()", "super().__init__()", "parent()", "init()"],
+      correctIndex: 1
+    }
   }
 ];
 
