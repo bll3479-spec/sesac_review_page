@@ -3725,6 +3725,508 @@ print(y_over.value_counts())`
       options: ["소수 클래스의 데이터들 사이를 보간해 가상의 새로운 데이터를 생성한다(오버샘플링)", "다수 클래스의 데이터를 무작위로 삭제한다", "모든 데이터에 라벨 인코딩을 다시 적용한다", "결측치를 평균값으로 채운다"],
       correctIndex: 0
     }
+  },
+  {
+    id: "w5-1-1",
+    week: "5주차 - 크롤링",
+    notebookTitle: "크롤링 1차 - crawler_competition.py",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/5%EC%A3%BC%EC%B0%A8%20-%20%ED%81%AC%EB%A1%A4%EB%A7%81/%ED%81%AC%EB%A1%A4%EB%A7%81%201%EC%B0%A8/crawler_competition.py",
+    title: "59. requests와 BeautifulSoup으로 정적 페이지 크롤링하기",
+    concept: `
+      <p><b>크롤링</b>은 웹페이지의 내용을 가져와 필요한 정보만 뽑아내는 작업입니다. 페이지 내용이 고정되어 있는
+      <b>정적 페이지</b>는 <code>requests.get(url)</code>로 html을 받아온 뒤, <code>BeautifulSoup(response.text, 'html.parser')</code>로
+      <b>파싱</b>(필요한 정보를 추출하기 좋은 구조로 분해)합니다. <code>soup.find_all('span', class_='category')</code>처럼
+      태그 이름과 class 속성을 지정하면 해당하는 요소들을 모두 찾아주고, <code>.text</code>로 텍스트만 꺼내 리스트에 모은 뒤
+      <code>pd.DataFrame</code>으로 정리해 <code>to_csv(..., encoding='utf-8-sig')</code>로 저장합니다.</p>`,
+    example: `import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+url = 'https://example.com/board'
+response = requests.get(url)
+
+soup = BeautifulSoup(response.text, 'html.parser')
+titles = soup.find_all('span', class_='subject')
+contents = soup.find_all('span', class_='text')
+
+rows = []
+for t, c in zip(titles, contents):
+    rows.append([t.text, c.text])
+
+df = pd.DataFrame(rows, columns=['제목', '내용'])
+df.to_csv('./result.csv', index=False, encoding='utf-8-sig')`,
+    practice: {
+      starter: `import requests
+from bs4 import ___ (1)
+import pandas as pd
+
+url = 'https://example.com/board'
+response = requests.get(url)
+
+# (2) html.parser로 파싱 객체 생성
+soup = BeautifulSoup(response.text, '___') (2)
+
+# (3) class가 'subject'인 span 태그를 모두 찾기
+titles = soup.___('span', class_='subject') (3)
+
+rows = [[t.text] for t in titles]
+df = pd.DataFrame(rows, columns=['제목'])
+df.to_csv('./result.csv', index=False, encoding='utf-8-sig')`,
+      hint: `(1) bs4 패키지에서 html 파싱 객체를 만드는 클래스 이름입니다. (2) BeautifulSoup의 두 번째 인자로 넘기는 기본 파서 이름입니다. (3) 조건에 맞는 모든 요소를 리스트로 찾는 메서드입니다.`,
+      answer: `import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+url = 'https://example.com/board'
+response = requests.get(url)
+
+soup = BeautifulSoup(response.text, 'html.parser')
+
+titles = soup.find_all('span', class_='subject')
+
+rows = [[t.text] for t in titles]
+df = pd.DataFrame(rows, columns=['제목'])
+df.to_csv('./result.csv', index=False, encoding='utf-8-sig')`
+    },
+    quiz: {
+      type: "mc",
+      question: `정적 웹페이지 크롤링에서 requests와 BeautifulSoup의 역할을 올바르게 짝지은 것은?`,
+      options: ["requests는 html을 받아오고, BeautifulSoup은 받아온 html을 파싱해서 필요한 정보를 추출한다", "requests는 파싱을 담당하고, BeautifulSoup은 요청을 보낸다", "둘 다 동적 페이지 전용 라이브러리다", "BeautifulSoup이 없으면 requests는 동작하지 않는다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w5-1-2",
+    week: "5주차 - 크롤링",
+    notebookTitle: "크롤링 1차 - crawler_competition_multiple.py",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/5%EC%A3%BC%EC%B0%A8%20-%20%ED%81%AC%EB%A1%A4%EB%A7%81/%ED%81%AC%EB%A1%A4%EB%A7%81%201%EC%B0%A8/crawler_competition_multiple.py",
+    title: "60. tqdm 진행률 표시와 여러 페이지 크롤링(append vs extend)",
+    concept: `
+      <p>여러 페이지를 반복해서 크롤링할 때는 <code>for page in tqdm(range(1, max_pages+1), desc='크롤링 진행 중...')</code>처럼
+      <b>tqdm</b>으로 반복문을 감싸면 진행 상황(진행률, 남은 시간)을 막대로 보여줘서 오래 걸리는 작업을 모니터링하기 좋습니다.
+      각 페이지에서 얻은 결과 리스트(<code>corpus</code>)를 전체 결과 리스트(<code>all_corpus</code>)에 합칠 때는
+      <code>.append(corpus)</code>를 쓰면 리스트 안에 리스트가 통째로 들어가버리므로, <b>리스트의 원소들을 풀어서 이어붙이는</b> <code>.extend(corpus)</code>를 사용해야 합니다.
+      서버에 부담을 주지 않기 위해 페이지마다 <code>time.sleep(2)</code>로 잠깐 멈춰주는 것도 중요합니다.</p>`,
+    example: `from tqdm import tqdm
+import time
+
+all_corpus = []
+max_pages = 3
+
+for page in tqdm(range(1, max_pages + 1), desc='크롤링 진행 중...'):
+    corpus = [f'page{page}-item1', f'page{page}-item2']  # 한 페이지에서 얻은 결과
+    all_corpus.extend(corpus)  # append가 아니라 extend!
+    time.sleep(0.5)
+
+print(all_corpus)`,
+    practice: {
+      starter: `from tqdm import tqdm
+import time
+
+all_results = []
+max_pages = 3
+
+# (1) tqdm으로 진행률을 표시하며 반복
+for page in ___(range(1, max_pages + 1), desc='진행 중...'): (1)
+    page_results = [f'p{page}-a', f'p{page}-b']
+    # (2) 리스트를 통째로 넣지 않고 원소들을 풀어서 이어붙이기
+    all_results.___(page_results) (2)
+    time.sleep(0.1)
+
+print(all_results)`,
+      hint: `(1) 반복문을 감싸 진행률 막대를 보여주는 함수입니다. (2) append와 달리 리스트의 원소들을 풀어서 이어붙이는 리스트 메서드입니다.`,
+      answer: `from tqdm import tqdm
+import time
+
+all_results = []
+max_pages = 3
+
+for page in tqdm(range(1, max_pages + 1), desc='진행 중...'):
+    page_results = [f'p{page}-a', f'p{page}-b']
+    all_results.extend(page_results)
+    time.sleep(0.1)
+
+print(all_results)`
+    },
+    quiz: {
+      type: "mc",
+      question: `한 페이지에서 얻은 리스트 corpus를 전체 리스트 all_corpus에 합칠 때 .append(corpus) 대신 .extend(corpus)를 써야 하는 이유는?`,
+      options: ["append는 리스트를 통째로 하나의 원소로 넣어버려서, extend로 원소들을 풀어서 이어붙여야 한다", "extend는 더 빠르게 동작하기 때문이다", "append는 문자열에만 사용할 수 있기 때문이다", "extend를 쓰면 자동으로 중복이 제거되기 때문이다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w5-1-3",
+    week: "5주차 - 크롤링",
+    notebookTitle: "크롤링 1차 - musinsa.py",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/5%EC%A3%BC%EC%B0%A8%20-%20%ED%81%AC%EB%A1%A4%EB%A7%81/%ED%81%AC%EB%A1%A4%EB%A7%81%201%EC%B0%A8/musinsa.py",
+    title: "61. Selenium을 이용한 동적 페이지 크롤링",
+    concept: `
+      <p>스크롤하거나 클릭해야 내용이 나타나는 <b>동적 페이지</b>는 requests만으로는 크롤링할 수 없어,
+      실제 브라우저를 제어하는 <b>Selenium</b>(<code>webdriver.Chrome()</code>)을 사용합니다.
+      <code>driver.get(url)</code>로 페이지를 열고, <code>driver.execute_script('window.scrollTo(0,2000)')</code>로 스크롤을 내려
+      추가 콘텐츠를 로드한 뒤, <code>driver.find_elements(By.CSS_SELECTOR, '선택자')</code>로 요소들을 가져옵니다.
+      개별 항목에서 속성을 꺼낼 땐 <code>element.get_attribute('속성명')</code>을 쓰고, 항목별로 정보가 없을 수도 있으므로
+      <code>try/except</code>로 예외처리하는 것이 안전합니다.</p>`,
+    example: `from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+
+driver = webdriver.Chrome()
+driver.get('https://example.com/products')
+time.sleep(2)
+
+driver.execute_script('window.scrollTo(0,2000)')
+time.sleep(2)
+
+items = driver.find_elements(By.CSS_SELECTOR, '.product-card')
+result = []
+for item in items:
+    try:
+        name = item.find_element(By.CSS_SELECTOR, 'a').get_attribute('aria-label')
+        result.append(name)
+    except Exception as e:
+        print(f'에러 발생: {e}')
+
+driver.quit()
+print(result)`,
+    practice: {
+      starter: `from selenium import webdriver
+from selenium.webdriver.common.by import ___ (1)
+import time
+
+driver = webdriver.Chrome()
+driver.___('https://example.com/products') (2)
+time.sleep(2)
+
+# (3) CSS 선택자로 여러 요소 찾기
+items = driver.find_elements(By.CSS_SELECTOR, '.product-card')
+
+result = []
+for item in items:
+    try:
+        name = item.get_attribute('aria-label')
+        result.append(name)
+    except Exception as e:
+        print(f'에러 발생: {e}')
+
+driver.quit()
+print(result)`,
+      hint: `(1) CSS_SELECTOR 같은 검색 기준을 제공하는 selenium 클래스 이름입니다. (2) requests.get과 비슷한, 브라우저로 페이지를 여는 메서드입니다. (3) find_elements의 첫 번째 인자로 검색 기준(By.CSS_SELECTOR)을 그대로 사용합니다.`,
+      answer: `from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+
+driver = webdriver.Chrome()
+driver.get('https://example.com/products')
+time.sleep(2)
+
+items = driver.find_elements(By.CSS_SELECTOR, '.product-card')
+
+result = []
+for item in items:
+    try:
+        name = item.get_attribute('aria-label')
+        result.append(name)
+    except Exception as e:
+        print(f'에러 발생: {e}')
+
+driver.quit()
+print(result)`
+    },
+    quiz: {
+      type: "mc",
+      question: `requests/BeautifulSoup 대신 Selenium을 사용해야 하는 경우는?`,
+      options: ["스크롤이나 클릭 등 상호작용이 있어야 내용이 나타나는 동적 페이지를 크롤링할 때", "페이지 내용이 완전히 고정되어 있을 때", "csv 파일을 저장할 때", "데이터프레임을 시각화할 때"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w5-1-4",
+    week: "5주차 - 크롤링",
+    notebookTitle: "크롤링 1차 - saramin.py",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/5%EC%A3%BC%EC%B0%A8%20-%20%ED%81%AC%EB%A1%A4%EB%A7%81/%ED%81%AC%EB%A1%A4%EB%A7%81%201%EC%B0%A8/saramin.py",
+    title: "62. 정규표현식과 함수화로 크롤링 데이터 정제하기",
+    concept: `
+      <p>크롤링으로 가져온 텍스트에는 불필요한 공백이나 깨진 특수문자가 섞여있는 경우가 많습니다.
+      <code>html.unescape(text)</code>는 <code>&amp;amp;</code> 같이 인코딩된 html 특수문자를 원래 문자로 복원해주고,
+      <code>re.sub(r'\\s+', ' ', text)</code>는 <b>정규표현식</b>으로 한 칸 이상의 모든 공백(탭, 줄바꿈 포함)을 하나의 공백으로 통일해줍니다.
+      이런 정제 과정을 <code>def clean_text(text): ...</code>처럼 <b>함수로 묶어두면</b>, 크롤링한 여러 항목(제목, 회사명, 위치 등)에
+      매번 같은 정제 로직을 일관되게 재사용할 수 있습니다.</p>`,
+    example: `import re
+from html import unescape
+
+def clean_text(raw):
+    if not raw:
+        return ""
+    text = unescape(raw)
+    text = re.sub(r'\\s+', ' ', text)
+    return text.strip()
+
+dirty = "  파이썬   개발자\\n모집   &amp;  채용  "
+print(clean_text(dirty))`,
+    practice: {
+      starter: `import re
+from html import unescape
+
+# (1) 정제 함수 정의: 값이 없으면 빈 문자열, 있으면 정제해서 반환
+def clean_text(raw):
+    if not raw:
+        return ___ (1)
+    text = unescape(raw)
+    # (2) 한 칸 이상의 공백을 모두 하나의 공백으로 치환
+    text = re.___(r'\\s+', ' ', text) (2)
+    return text.strip()
+
+dirty = "  데이터   분석가\\n채용  "
+print(clean_text(dirty))`,
+      hint: `(1) "값이 없을 때" 반환할 빈 문자열을 적습니다. (2) 정규표현식 패턴을 찾아 다른 문자로 바꿔주는 re 모듈의 함수입니다.`,
+      answer: `import re
+from html import unescape
+
+def clean_text(raw):
+    if not raw:
+        return ""
+    text = unescape(raw)
+    text = re.sub(r'\\s+', ' ', text)
+    return text.strip()
+
+dirty = "  데이터   분석가\\n채용  "
+print(clean_text(dirty))`
+    },
+    quiz: {
+      type: "mc",
+      question: `re.sub(r'\\s+', ' ', text)가 하는 일은?`,
+      options: ["한 칸 이상의 모든 공백(탭, 줄바꿈 포함)을 하나의 공백으로 통일한다", "텍스트의 모든 공백을 제거한다", "텍스트를 모두 대문자로 바꾼다", "html 특수문자를 인코딩한다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w5-2-1",
+    week: "5주차 - 크롤링",
+    notebookTitle: "크롤링 2차 - crawler.py",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/5%EC%A3%BC%EC%B0%A8%20-%20%ED%81%AC%EB%A1%A4%EB%A7%81/%ED%81%AC%EB%A1%A4%EB%A7%81%202%EC%B0%A8/crawler.py",
+    title: "63. 검색 조건을 매개변수화한 크롤링 함수 만들기",
+    concept: `
+      <p>실전에서는 크롤링 조건(검색어, 지역, 경력 등)이 매번 달라지므로, 크롤링 로직을
+      <code>def crawling_saramin(search_text, region=None, career="", max_pages=1): ...</code>처럼
+      <b>함수의 매개변수</b>로 분리해두면 다양한 조건에 재사용할 수 있습니다. 함수 안에서는 조건이 주어졌을 때만
+      <code>if region: parameters['loc_mcd'] = region</code>처럼 <b>요청 파라미터(parameters)에 동적으로 채워 넣고</b>,
+      <code>requests.get(url, headers=headers, params=parameters, timeout=15)</code>로 요청을 보냅니다.
+      네트워크 요청은 실패할 수 있으므로 <code>try/except</code>로 감싸 에러가 나도 프로그램이 멈추지 않게 합니다.</p>`,
+    example: `import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+def crawling_jobs(search_text, region=None, max_pages=1):
+    rows = []
+    headers = {"User-Agent": "Mozilla/5.0"}
+    for page in range(1, max_pages + 1):
+        parameters = {'searchword': search_text, 'page': page}
+        if region:
+            parameters['region'] = region
+        try:
+            response = requests.get('https://example.com/search', headers=headers, params=parameters, timeout=15)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            for item in soup.select('div.job'):
+                rows.append({'title': item.get_text(strip=True)})
+        except Exception as e:
+            print(f'에러 발생 {e}')
+            break
+    return pd.DataFrame(rows)`,
+    practice: {
+      starter: `import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# (1) search_text, region(기본값 None), max_pages(기본값 1)를 매개변수로 받는 함수
+def crawling_jobs(___, region=___, max_pages=1): (1)
+    rows = []
+    headers = {"User-Agent": "Mozilla/5.0"}
+    for page in range(1, max_pages + 1):
+        parameters = {'searchword': search_text, 'page': page}
+        # (2) region이 주어졌을 때만 parameters에 추가
+        ___ region: (2)
+            parameters['region'] = region
+        try:
+            response = requests.get('https://example.com/search', headers=headers, params=parameters, timeout=15)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            for item in soup.select('div.job'):
+                rows.append({'title': item.get_text(strip=True)})
+        # (3) 요청 실패 시 에러를 출력하고 반복 중단
+        ___ Exception as e: (3)
+            print(f'에러 발생 {e}')
+            break
+    return pd.DataFrame(rows)`,
+      hint: `(1) 함수 정의 시 매개변수 이름과 기본값을 지정합니다. (2) 값이 있을 때만 실행하는 조건문 키워드입니다. (3) try 블록에서 예외가 발생했을 때 처리하는 키워드입니다.`,
+      answer: `import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+def crawling_jobs(search_text, region=None, max_pages=1):
+    rows = []
+    headers = {"User-Agent": "Mozilla/5.0"}
+    for page in range(1, max_pages + 1):
+        parameters = {'searchword': search_text, 'page': page}
+        if region:
+            parameters['region'] = region
+        try:
+            response = requests.get('https://example.com/search', headers=headers, params=parameters, timeout=15)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            for item in soup.select('div.job'):
+                rows.append({'title': item.get_text(strip=True)})
+        except Exception as e:
+            print(f'에러 발생 {e}')
+            break
+    return pd.DataFrame(rows)`
+    },
+    quiz: {
+      type: "mc",
+      question: `크롤링 조건(검색어, 지역, 경력 등)을 함수의 매개변수로 분리해서 설계하는 이유는?`,
+      options: ["다양한 검색 조건에 같은 크롤링 로직을 재사용할 수 있기 때문", "크롤링 속도를 무조건 빠르게 만들기 때문", "웹사이트의 차단을 원천적으로 막기 때문", "결측치를 자동으로 제거하기 때문"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w5-2-2",
+    week: "5주차 - 크롤링",
+    notebookTitle: "크롤링 2차 - crawler.py",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/5%EC%A3%BC%EC%B0%A8%20-%20%ED%81%AC%EB%A1%A4%EB%A7%81/%ED%81%AC%EB%A1%A4%EB%A7%81%202%EC%B0%A8/crawler.py",
+    title: "64. StringIO로 메모리 안에서 CSV 버퍼 만들기",
+    concept: `
+      <p>크롤링한 데이터를 웹 서비스(예: Streamlit 앱)로 배포하면, 클라우드 서버에는 파일을 영구 저장할 곳이 마땅치 않습니다.
+      <code>io.StringIO()</code>는 디스크에 파일을 만들지 않고 <b>메모리 안에서 파일처럼 동작하는 임시 버퍼</b>를 만들어줍니다.
+      <code>df.to_csv(buffer, index=False)</code>로 데이터프레임을 이 버퍼에 csv 형식으로 써넣은 뒤,
+      <code>buffer.getvalue().encode('utf-8-sig')</code>로 실제 바이트 데이터를 꺼내면, 사용자가 브라우저에서 바로
+      <b>다운로드 버튼</b>을 눌러 받을 수 있는 형태로 만들 수 있습니다.</p>`,
+    example: `from io import StringIO
+import pandas as pd
+
+def download_to_csv(df):
+    buffer = StringIO()
+    df.to_csv(buffer, index=False)
+    return buffer.getvalue().encode('utf-8-sig')
+
+df = pd.DataFrame({'name': ['김철수', '이영희'], 'score': [90, 85]})
+csv_bytes = download_to_csv(df)
+print(type(csv_bytes))
+print(csv_bytes[:30])`,
+    practice: {
+      starter: `from io import ___ (1)
+import pandas as pd
+
+def download_to_csv(df):
+    # (2) 메모리 안에서 동작하는 임시 버퍼 생성
+    buffer = ___() (2)
+    # (3) 데이터프레임을 csv 형식으로 버퍼에 쓰기
+    df.___(buffer, index=False) (3)
+    return buffer.getvalue().encode('utf-8-sig')
+
+df = pd.DataFrame({'name': ['철수'], 'score': [90]})
+csv_bytes = download_to_csv(df)
+print(csv_bytes)`,
+      hint: `(1) io 모듈에서 문자열 기반 메모리 버퍼를 만드는 클래스 이름입니다. (2) 위에서 import한 클래스를 그대로 호출합니다. (3) 데이터프레임을 csv 형식으로 출력하는 메서드입니다.`,
+      answer: `from io import StringIO
+import pandas as pd
+
+def download_to_csv(df):
+    buffer = StringIO()
+    df.to_csv(buffer, index=False)
+    return buffer.getvalue().encode('utf-8-sig')
+
+df = pd.DataFrame({'name': ['철수'], 'score': [90]})
+csv_bytes = download_to_csv(df)
+print(csv_bytes)`
+    },
+    quiz: {
+      type: "mc",
+      question: `StringIO를 사용해 csv 버퍼를 만드는 주된 이유는?`,
+      options: ["디스크에 파일을 저장하지 않고도 메모리 안에서 파일처럼 다룰 수 있어 클라우드 환경에서 다운로드 기능을 구현하기 좋다", "csv 파일을 자동으로 암호화하기 때문이다", "데이터프레임의 결측치를 자동으로 제거하기 때문이다", "크롤링 속도를 향상시키기 때문이다"],
+      correctIndex: 0
+    }
+  },
+  {
+    id: "w5-2-3",
+    week: "5주차 - 크롤링",
+    notebookTitle: "크롤링 2차 - main.py",
+    notebookUrl: "https://github.com/bll3479-spec/sesac_review_page/blob/main/%EA%B5%90%EC%95%88%20%ED%8C%8C%EC%9D%BC/5%EC%A3%BC%EC%B0%A8%20-%20%ED%81%AC%EB%A1%A4%EB%A7%81/%ED%81%AC%EB%A1%A4%EB%A7%81%202%EC%B0%A8/main.py",
+    title: "65. Streamlit으로 크롤링 결과를 보여주는 웹앱 만들기",
+    concept: `
+      <p><b>Streamlit</b>은 파이썬 코드만으로 간단한 웹 UI를 만들 수 있는 라이브러리입니다. <code>st.button('크롤링 시작')</code>으로
+      버튼을 만들고 <code>if 버튼변수:</code>로 클릭 여부를 확인하며, <code>st.spinner('기다려주세요...')</code>로 작업 중임을 안내합니다.
+      Streamlit은 상호작용이 있을 때마다 스크립트를 처음부터 다시 실행하기 때문에, 크롤링 결과처럼 <b>유지해야 하는 값</b>은
+      <code>st.session_state['df'] = df</code>처럼 딥셔너리 형태의 <b>session_state</b>에 저장해둬야 화면이 다시 그려져도 사라지지 않습니다.
+      결과는 <code>st.dataframe(df)</code>로 보여주고 <code>st.download_button(data=csv_bytes, file_name='result.csv')</code>로
+      다운로드 기능을 제공합니다.</p>`,
+    example: `import streamlit as st
+import pandas as pd
+
+st.title('크롤링 결과 조회')
+
+search_text = st.text_input('검색어를 입력하세요')
+
+if 'df' not in st.session_state:
+    st.session_state['df'] = pd.DataFrame()
+
+if st.button('크롤링 시작'):
+    if not search_text:
+        st.warning('검색어를 입력해주세요')
+    else:
+        with st.spinner('크롤링 중...'):
+            df = pd.DataFrame({'결과': [search_text + '1', search_text + '2']})
+        st.session_state['df'] = df
+
+df = st.session_state['df']
+if not df.empty:
+    st.dataframe(df)`,
+    practice: {
+      starter: `import streamlit as st
+import pandas as pd
+
+search_text = st.text_input('검색어를 입력하세요')
+
+# (1) session_state에 'df' 키가 없으면 빈 데이터프레임으로 초기화
+if 'df' not in st.session_state:
+    st.session_state['df'] = pd.___() (1)
+
+# (2) 버튼이 클릭되었는지 확인
+if st.___('크롤링 시작'): (2)
+    if not search_text:
+        st.warning('검색어를 입력해주세요')
+    else:
+        df = pd.DataFrame({'결과': [search_text]})
+        # (3) 크롤링 결과를 session_state에 저장
+        st.session_state['___'] = df (3)
+
+df = st.session_state['df']
+if not df.empty:
+    st.dataframe(df)`,
+      hint: `(1) 빈 데이터프레임을 만드는 pandas 클래스 호출입니다. (2) 버튼을 만들고 클릭 여부를 반환하는 streamlit 함수입니다. (3) 위에서 사용한 것과 동일한 키 이름('df')을 문자열로 적습니다.`,
+      answer: `import streamlit as st
+import pandas as pd
+
+search_text = st.text_input('검색어를 입력하세요')
+
+if 'df' not in st.session_state:
+    st.session_state['df'] = pd.DataFrame()
+
+if st.button('크롤링 시작'):
+    if not search_text:
+        st.warning('검색어를 입력해주세요')
+    else:
+        df = pd.DataFrame({'결과': [search_text]})
+        st.session_state['df'] = df
+
+df = st.session_state['df']
+if not df.empty:
+    st.dataframe(df)`
+    },
+    quiz: {
+      type: "mc",
+      question: `Streamlit에서 st.session_state를 사용하는 이유는?`,
+      options: ["상호작용이 있을 때마다 스크립트가 다시 실행되어도 유지해야 하는 값(예: 크롤링 결과)을 보존하기 위해", "css 디자인을 적용하기 위해", "데이터베이스에 직접 연결하기 위해", "크롤링 속도를 빠르게 하기 위해"],
+      correctIndex: 0
+    }
   }
 ];
 
